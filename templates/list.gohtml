@@ -3,14 +3,19 @@
 <head>
   <meta charset='utf-8'>
   <title>Эволюция планет в Солнечной системе</title>
+  <link rel="stylesheet" href="../styles/index.css">
 </head>
 <body>
-{{range .Items}}
-  <h1>{{ .Name }}</h1>
-  <p>{{ .Description }}</p>
-  <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
-  <p>Звездная величина: {{ .Magnitude }}</p>
-  <img src="https://rg.ru/uploads/images/2023/07/15/istock-1132314392_aab.jpg" alt="not found">
-{{end}}
+<div>
+    {{range .Items}}
+      <div class="flex">
+        <h1>{{ .Name }}</h1>
+        <p>{{ .Description }}</p>
+        <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
+        <p>Звездная величина: {{ .Magnitude }}</p>
+        <img src="/image/{{ .Image }}" alt="not found">
+      </div>
+    {{end}}
+</div>
 </body>
 </html>
