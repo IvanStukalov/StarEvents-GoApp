@@ -7,7 +7,6 @@ import (
 	"net/http"
 )
 
-// Обработчик главной странице.
 func RenderTmpl(url string, files []string, data any, c *gin.Context) {
 	r := c.Request
 	w := c.Writer

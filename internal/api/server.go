@@ -23,7 +23,7 @@ func StartServer() {
 	r.LoadHTMLGlob("templates/*")
 
 	r.GET("/home", func(c *gin.Context) {
-		list.Render(c)
+		list.Render("/home", c)
 	})
 
 	r.Static("/image", "./resources")

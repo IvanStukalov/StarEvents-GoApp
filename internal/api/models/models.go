@@ -1,10 +1,13 @@
 package models
 
-type item struct {
-	title string
-	text  string
+type Item struct {
+	Name        string
+	Description string
+	Distance    float32
+	Magnitude   float32
+	Image       string
 }
 
-type list struct {
-	items []item
+type List struct {
+	Items []Item
 }
