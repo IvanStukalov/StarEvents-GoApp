@@ -1,11 +1,9 @@
 package main
 
 import (
-	"log"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
 )
 
 func main() {
-	log.Println("app start")
-	api.s
-	log.Println("app terminated")
+	api.StartServer()
 }
