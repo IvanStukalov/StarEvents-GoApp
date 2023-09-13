@@ -2,20 +2,32 @@
 <html lang='en'>
 <head>
   <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Эволюция планет в Солнечной системе</title>
-  <link rel="stylesheet" href="../styles/index.css">
+  <link rel="stylesheet" href="/styles/index.css" type="text/css"/>
 </head>
 <body>
+
 <div>
-    {{range .Items}}
-      <div class="flex">
-        <h1>{{ .Name }}</h1>
-        <p>{{ .Description }}</p>
-        <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
-        <p>Звездная величина: {{ .Magnitude }}</p>
-        <img src="/image/{{ .Image }}" alt="not found">
-      </div>
-    {{end}}
+  <h3>Эволюция ближайших к Солнцу звезд</h3>
 </div>
+
+<div class="card__container">
+  <div class="card__list">
+      {{range .Items}}
+        <div class="card" style="background-image: url(/image/{{ .Image }})">
+          <div class="card__description--bgnd"></div>
+          <div class="card__description">
+            <h2 class="card__text">{{ .Name }}</h2>
+            <p>{{ .Description }}</p>
+            <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
+            <p>Звездная величина: {{ .Magnitude }}</p>
+          </div>
+        </div>
+      {{end}}
+  </div>
+</div>
+
 </body>
 </html>

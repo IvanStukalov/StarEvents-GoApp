@@ -27,6 +27,7 @@ func StartServer() {
 	})
 
 	r.Static("/image", "./resources")
+	r.Static("/styles", "./styles")
 
 	// listen and serve on 127.0.0.1:8080
 	err := r.Run()
