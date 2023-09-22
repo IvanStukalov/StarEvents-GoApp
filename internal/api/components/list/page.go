@@ -27,6 +27,27 @@ func Render(url string, c *gin.Context) {
 				Magnitude:   11.1,
 				Image:       "Proxima_Centauri.jpg",
 			},
+			{
+				Name:        "Звезда Барнарда",
+				Description: "Одиночная звезда в созвездии Змееносца",
+				Distance:    5.96,
+				Magnitude:   9.57,
+				Image:       "Barnard.jpeg",
+			},
+			{
+				Name:        "Сириус",
+				Description: "Ярчайшая звезда ночного неба",
+				Distance:    8.6,
+				Magnitude:   -1.46,
+				Image:       "Sirius.jpg",
+			},
+			{
+				Name:        "Лейтен 726-8",
+				Description: "Двойная звезда в созвездии Кита",
+				Distance:    8.73,
+				Magnitude:   12.5,
+				Image:       "Leiten.jpg",
+			},
 		},
 	}
 
