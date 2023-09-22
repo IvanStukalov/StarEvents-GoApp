@@ -18,11 +18,10 @@ img {
 
 .card {
   display: flex;
-  justify-content: space-between;
   border: white 2px solid;
   border-radius: 2em;
 
-  padding: 2em;
+  padding: 1em;
   margin: 0 0 3em 0;
 
   height: 15em;
@@ -32,12 +31,14 @@ img {
   background-size: cover;
 }
 
+.card__description--container {
+  width: 50%;
+}
+
 .card__description {
   position: relative;
-  right: 50%;
-
-  height: 100%;
-  width: 100%;
+  bottom: 100%;
+  padding: 1em;
 }
 
 .card__description--bgnd {
@@ -47,4 +48,9 @@ img {
   border-radius: 1em;
   background-color: black;
   opacity: 70%;
+  transition: opacity 0.4s ease;
+}
+
+.card__description--container:hover .card__description--bgnd {
+    opacity: 1;
 }
