@@ -15,7 +15,7 @@ func Render(url string, c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		log.Fatalln("cannot convert string to int")
+		log.Println(err)
 	}
 	list := models.GetData()
 

@@ -1,5 +1,7 @@
 package models
 
+import "strings"
+
 func GetData() List {
 	return List{
 		Items: []Item{
@@ -54,4 +56,14 @@ func GetItemById(list List, id int) Item {
 		}
 	}
 	return Item{}
+}
+
+func GetItemByName(list List, name string) List {
+	res := List{}
+	for i := 0; i < len(list.Items); i++ {
+		if strings.Contains(strings.ToLower(list.Items[i].Name), strings.ToLower(name)) {
+			res.Items = append(res.Items, list.Items[i])
+		}
+	}
+	return res
 }

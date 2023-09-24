@@ -8,16 +8,21 @@
   <link rel="stylesheet" href="/styles/index.css" type="text/css"/>
 </head>
 <body>
+<a class="href" href="/home">
+  <h3 class="btn">Назад</h3>
+</a>
 
 <div class="item__container">
-  <div class="item__info">
-    <h3>{{ .Name }}</h3>
-    <p>{{ .Description }}</p>
-    <p>Видимая звездная величина: {{ .Magnitude }}</p>
-    <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
-  </div>
+  <div class="item__card">
+    <div class="item__info">
+      <h3>{{ .Name }}</h3>
+      <p>{{ .Description }}</p>
+      <p>Видимая звездная величина: {{ .Magnitude }}</p>
+      <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
+    </div>
 
-  <img class="item__img" src="/image/{{ .Image }}" alt="">
+    <img class="item__img" src="/image/{{ .Image }}" alt="">
+  </div>
 </div>
 
 </body>

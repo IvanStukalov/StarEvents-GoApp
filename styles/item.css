@@ -1,11 +1,21 @@
 .item__container {
   display: flex;
+  justify-content: center;
+
+  margin-top: 3em;
+}
+
+.item__card {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+  height: 20em;
+
+  border: white 2px solid;
+  border-radius: 2em;
+  padding: 2em;
 }
 
 .item__info {
-  color: red;
-}
-
-.item__img {
-  width: 10em;
+  padding-right: 1em;
 }

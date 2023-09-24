@@ -39,6 +39,9 @@ img {
   position: relative;
   bottom: 100%;
   padding: 1em;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .card__description--bgnd {
@@ -55,7 +58,33 @@ img {
   opacity: 1;
 }
 
-.href {
-  text-decoration: none;
+.form__container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 2em;
+}
+
+.form {
+  width: 50%;
+
+}
+
+.input__text {
+  font-size: 1.3em;
+
+  background-color: black;
+  color: white;
+  border-radius: 1em;
+  padding: 0.2em 0.5em 0.2em 0.5em;
+}
+
+.input__btn {
+  font-size: 1.3em;
+  margin-left: 1em;
+  border-radius: 1em;
+  padding: 0.2em 1em 0.2em 1em;
+
+  background-color: black;
   color: white;
 }

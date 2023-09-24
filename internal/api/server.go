@@ -27,8 +27,8 @@ func StartServer() {
 		list.Render("/home", c)
 	})
 
-	r.GET("/:id", func(c *gin.Context) {
-		item.Render("/:id", c)
+	r.GET("/star/:id", func(c *gin.Context) {
+		item.Render("/star/:id", c)
 	})
 
 	r.Static("/image", "./resources")

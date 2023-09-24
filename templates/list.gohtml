@@ -13,19 +13,26 @@
   <h3>Эволюция ближайших к Солнцу звезд</h3>
 </div>
 
+<div class="row"></div>
+
+<div class="form__container">
+  <form class="form" action="/home" method="get">
+    <input class="input__text" type="text" name="name" placeholder="Название звезды">
+    <input class="input__btn" type="submit" value="Найти">
+  </form>
+</div>
+
 <div class="card__container">
   <div class="card__list">
       {{range .Items}}
-        <a class="href" href="/{{ .ID }}">
+        <a class="href" href="/star/{{ .ID }}">
           <div class="card" style="background-image: url(/image/{{ .Image }})">
             <div class="card__description--container">
               <div class="card__description--bgnd"></div>
 
               <div class="card__description">
-                <h2 class="card__text">{{ .Name }}</h2>
+                <h2>{{ .Name }}</h2>
                 <p>{{ .Description }}</p>
-                <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
-                <p>Звездная величина: {{ .Magnitude }}</p>
               </div>
             </div>
           </div>

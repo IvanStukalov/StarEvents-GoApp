@@ -1,2 +1,22 @@
 @import "list.css";
 @import "item.css";
+
+.href {
+  text-decoration: none;
+  color: white;
+}
+
+.btn {
+  border: white 2px solid;
+  border-radius: 1em;
+  padding: 0.5em 1em 0.5em 1em;
+  margin: 1em;
+  width: fit-content;
+}
+
+.row {
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  margin: 1em 0 2em 0;
+}

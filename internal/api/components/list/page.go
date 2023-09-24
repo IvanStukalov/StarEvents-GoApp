@@ -11,7 +11,12 @@ func Render(url string, c *gin.Context) {
 		"templates/list.gohtml",
 	}
 
-	data := models.GetData()
+	var data models.List
+	if c.Query("name") != "" {
+		data = models.GetItemByName(models.GetData(), c.Query("name"))
+	} else {
+		data = models.GetData()
+	}
 
 	render.RenderTmpl(url, files, data, c)
 }
