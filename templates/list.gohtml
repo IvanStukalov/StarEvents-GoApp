@@ -16,18 +16,20 @@
 <div class="card__container">
   <div class="card__list">
       {{range .Items}}
-        <div class="card" style="background-image: url(/image/{{ .Image }})">
-          <div class="card__description--container">
-            <div class="card__description--bgnd"></div>
+        <a class="href" href="/{{ .ID }}">
+          <div class="card" style="background-image: url(/image/{{ .Image }})">
+            <div class="card__description--container">
+              <div class="card__description--bgnd"></div>
 
-            <div class="card__description">
-              <h2 class="card__text">{{ .Name }}</h2>
-              <p>{{ .Description }}</p>
-              <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
-              <p>Звездная величина: {{ .Magnitude }}</p>
+              <div class="card__description">
+                <h2 class="card__text">{{ .Name }}</h2>
+                <p>{{ .Description }}</p>
+                <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
+                <p>Звездная величина: {{ .Magnitude }}</p>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
       {{end}}
   </div>
 </div>

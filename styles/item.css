@@ -1,0 +1,11 @@
+.item__container {
+  display: flex;
+}
+
+.item__info {
+  color: red;
+}
+
+.item__img {
+  width: 10em;
+}

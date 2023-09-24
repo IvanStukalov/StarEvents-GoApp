@@ -8,13 +8,7 @@ import (
 )
 
 func RenderTmpl(url string, files []string, data any, c *gin.Context) {
-	r := c.Request
 	w := c.Writer
-
-	if r.URL.Path != url {
-		http.NotFound(w, r)
-		return
-	}
 
 	// Используем функцию template.ParseFiles() для чтения файлов шаблона.
 	ts, err := template.ParseFiles(files...)

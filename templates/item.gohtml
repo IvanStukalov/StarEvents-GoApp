@@ -1,10 +1,24 @@
 <!doctype html>
 <html lang='en'>
-  <head>
-    <meta charset='utf-8'>
-    <title>Эволюция планет в Солнечной системе</title>
-  </head>
-  <body>
+<head>
+  <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  </body>
+  <title>Эволюция планет в Солнечной системе</title>
+  <link rel="stylesheet" href="/styles/index.css" type="text/css"/>
+</head>
+<body>
+
+<div class="item__container">
+  <div class="item__info">
+    <h3>{{ .Name }}</h3>
+    <p>{{ .Description }}</p>
+    <p>Видимая звездная величина: {{ .Magnitude }}</p>
+    <p>Расстояние от Солнца: {{ .Distance }} св. лет</p>
+  </div>
+
+  <img class="item__img" src="/image/{{ .Image }}" alt="">
+</div>
+
+</body>
 </html>

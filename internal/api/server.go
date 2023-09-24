@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/components/item"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/components/list"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -24,6 +25,10 @@ func StartServer() {
 
 	r.GET("/home", func(c *gin.Context) {
 		list.Render("/home", c)
+	})
+
+	r.GET("/:id", func(c *gin.Context) {
+		item.Render("/:id", c)
 	})
 
 	r.Static("/image", "./resources")
