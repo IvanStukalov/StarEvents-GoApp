@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func RenderTmpl(url string, files []string, data any, c *gin.Context) {
+func RenderTmpl(files []string, data any, c *gin.Context) {
 	w := c.Writer
 
 	// Используем функцию template.ParseFiles() для чтения файлов шаблона.

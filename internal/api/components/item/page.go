@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func Render(url string, c *gin.Context) {
+func Render(c *gin.Context) {
 	files := []string{
 		"templates/item.gohtml",
 	}
@@ -21,5 +21,5 @@ func Render(url string, c *gin.Context) {
 
 	item := models.GetItemById(list, id)
 
-	render.RenderTmpl(url, files, item, c)
+	render.RenderTmpl(files, item, c)
 }

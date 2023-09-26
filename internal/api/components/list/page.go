@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Render(url string, c *gin.Context) {
+func Render(c *gin.Context) {
 	files := []string{
 		"templates/list.gohtml",
 	}
@@ -18,5 +18,5 @@ func Render(url string, c *gin.Context) {
 		data = models.GetData()
 	}
 
-	render.RenderTmpl(url, files, data, c)
+	render.RenderTmpl(files, data, c)
 }
