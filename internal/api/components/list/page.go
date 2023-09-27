@@ -18,5 +18,5 @@ func Render(url string, c *gin.Context) {
 		data = models.GetData()
 	}
 
-	render.RenderTmpl(url, files, data, c)
+	render.RenderTmpl(url, files, gin.H{"data": data, "QueryParam": c.Query("starName")}, c)
 }

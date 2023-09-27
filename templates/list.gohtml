@@ -17,14 +17,14 @@
 
 <div class="form__container">
   <form class="form" action="/home" method="get">
-    <input class="input__text" type="text" name="starName" placeholder="Название звезды">
+    <input class="input__text" type="text" name="starName" value="{{ .QueryParam }}" placeholder="Название звезды">
     <input class="input__btn" type="submit" value="Найти">
   </form>
 </div>
 
 <div class="card__container">
   <div class="card__list">
-      {{range .Items}}
+      {{range .data.Items}}
         <a class="href" href="/star/{{ .ID }}">
           <div class="card" style="background-image: url(/image/{{ .Image }})">
             <div class="card__description--container">
