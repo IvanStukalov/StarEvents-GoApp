@@ -12,6 +12,7 @@ func GetData() List {
 				Distance:    0,
 				Magnitude:   -26.7,
 				Image:       "sun.png",
+				Age:         5.6,
 			},
 			{
 				ID:          2,
@@ -20,6 +21,7 @@ func GetData() List {
 				Distance:    4.2,
 				Magnitude:   11.1,
 				Image:       "Proxima_Centauri.jpg",
+				Age:         4.8,
 			},
 			{
 				ID:          3,
@@ -28,6 +30,7 @@ func GetData() List {
 				Distance:    5.96,
 				Magnitude:   9.57,
 				Image:       "Barnard.jpeg",
+				Age:         1.5,
 			},
 			{
 				ID:          4,
@@ -36,6 +39,7 @@ func GetData() List {
 				Distance:    8.6,
 				Magnitude:   -1.46,
 				Image:       "Sirius.jpg",
+				Age:         3.3,
 			},
 			{
 				ID:          5,
@@ -44,6 +48,7 @@ func GetData() List {
 				Distance:    8.73,
 				Magnitude:   12.5,
 				Image:       "Leiten.jpg",
+				Age:         5.3,
 			},
 		},
 	}

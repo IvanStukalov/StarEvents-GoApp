@@ -12,8 +12,8 @@ func Render(url string, c *gin.Context) {
 	}
 
 	var data models.List
-	if c.Query("name") != "" {
-		data = models.GetItemByName(models.GetData(), c.Query("name"))
+	if c.Query("starName") != "" {
+		data = models.GetItemByName(models.GetData(), c.Query("starName"))
 	} else {
 		data = models.GetData()
 	}

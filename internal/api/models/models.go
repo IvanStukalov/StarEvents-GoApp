@@ -7,6 +7,7 @@ type Item struct {
 	Distance    float32
 	Magnitude   float32
 	Image       string
+	Age         float32
 }
 
 type List struct {
