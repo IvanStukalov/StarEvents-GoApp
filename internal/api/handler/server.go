@@ -72,7 +72,10 @@ func (h *Handler) GetStarList(c *gin.Context) {
 		resList = data
 	}
 
-	render.RenderTmpl(files, gin.H{"Items": resList}, c)
+	render.RenderTmpl(files, gin.H{
+		"Items":      resList,
+		"QueryParam": c.Query("starName"),
+	}, c)
 }
 
 func (h *Handler) GetStarById(c *gin.Context) {

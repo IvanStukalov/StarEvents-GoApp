@@ -17,7 +17,7 @@
 
 <div class="form__container">
   <form class="form" action="/home" method="get">
-    <input class="input__text" type="text" name="starName" placeholder="Название звезды">
+    <input class="input__text" type="text" name="starName" value="{{ .QueryParam }}" placeholder="Название звезды">
     <input class="input__btn" type="submit" value="Найти">
   </form>
 </div>
