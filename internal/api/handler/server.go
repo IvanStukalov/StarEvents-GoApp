@@ -3,10 +3,12 @@ package handler
 import (
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/render"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 type Handler struct {
@@ -28,6 +30,7 @@ func (h *Handler) StartServer() {
 
 	r.GET("/home", h.GetStarList)
 	r.GET("/star/:id", h.GetStarById)
+	r.POST("/star/:id", h.DeleteStarById)
 
 	r.Static("/image", "./resources")
 	r.Static("/styles", "./styles")
@@ -52,16 +55,24 @@ func (h *Handler) GetStarList(c *gin.Context) {
 		"templates/list.gohtml",
 	}
 
-	//var data []models.Star
-	//if c.Query("name") != "" {
-	//	data = models.GetItemByName(models.GetData(), c.Query("name"))
-	//} else {
 	data, err := h.repo.GetStars()
 	if err != nil {
 		log.Println(err)
 	}
 
-	render.RenderTmpl(files, data, c)
+	var resList []models.Star
+
+	if c.Query("name") != "" {
+		for i := 0; i < len(data); i++ {
+			if strings.Contains(strings.ToLower(data[i].Name), strings.ToLower(c.Query("name"))) {
+				resList = append(resList, data[i])
+			}
+		}
+	} else {
+		resList = data
+	}
+
+	render.RenderTmpl(files, gin.H{"Items": resList}, c)
 }
 
 func (h *Handler) GetStarById(c *gin.Context) {
@@ -80,4 +91,20 @@ func (h *Handler) GetStarById(c *gin.Context) {
 	}
 
 	render.RenderTmpl(files, item, c)
+}
+
+func (h *Handler) DeleteStarById(c *gin.Context) {
+	cardId := c.Param("id")
+	id, err := strconv.Atoi(cardId)
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+	}
+
+	err = h.repo.DeleteStarById(id)
+	if err != nil { // если не получилось
+		log.Printf("cant get star by id %v", err)
+		c.Error(err)
+		return
+	}
+	c.Redirect(http.StatusFound, "/home")
 }

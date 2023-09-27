@@ -32,7 +32,10 @@
 
               <div class="card__description">
                 <h2>{{ .Name }}</h2>
-                <p>{{ .Description }}</p>*
+                <p>{{ .Description }}</p>
+                <form action="/star/{{ .ID }}" method="post">
+                  <input class="delete_btn" type="submit" value="Удалить">
+                </form>
               </div>
             </div>
           </div>

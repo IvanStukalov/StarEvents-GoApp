@@ -2,7 +2,6 @@ package repository
 
 import (
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
-	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"strconv"
@@ -32,33 +31,22 @@ func NewRepository(connectionString string) (*Repository, error) {
 func (r *Repository) GetStarByID(starId int) (models.Star, error) {
 	star := models.Star{}
 
-	err := r.db.First(&star, "star_id = ?", strconv.Itoa(starId)).Error
-	if err != nil {
-		return star, err
-	}
+	r.db.Find(&star, "id = ?", strconv.Itoa(starId))
 
-	return star, nil
-}
-
-// ////////////////////////////////////////////////////////////////////////////////
-func (r *Repository) GetStarByName(name string) (models.Star, error) {
-	star := models.Star{}
-
-	err := r.db.First(&star, "name = ?", name).Error
-	if err != nil {
-		return star, err
-	}
 	return star, nil
 }
 
 func (r *Repository) GetStars() ([]models.Star, error) {
 	var star []models.Star
 
-	r.db.Find(&star)
-	log.Println("len", len(star))
+	r.db.Find(&star, "is_active = ?", true)
 	return star, nil
 }
 
-func (r *Repository) CreateProduct(star models.Star) error {
-	return r.db.Create(star).Error
+func (r *Repository) DeleteStarById(starId int) error {
+	err := r.db.Exec("UPDATE stars SET is_active=false WHERE id = ?", starId).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
