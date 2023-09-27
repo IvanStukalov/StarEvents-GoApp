@@ -45,7 +45,7 @@ create table events
     completion_date integer,
     moderator_id    integer
         constraint event_user_user_id_fk
-            references "user"
+            references "users"
 );
 
 alter table events
@@ -58,10 +58,10 @@ create table star_events
             primary key,
     star_id       integer
         constraint star_event_star_star_id_fk
-            references star,
+            references stars,
     event_id      integer
         constraint star_event_event_event_id_fk
-            references event
+            references events
 );
 
 alter table star_events

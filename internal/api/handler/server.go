@@ -62,9 +62,9 @@ func (h *Handler) GetStarList(c *gin.Context) {
 
 	var resList []models.Star
 
-	if c.Query("name") != "" {
+	if c.Query("starName") != "" {
 		for i := 0; i < len(data); i++ {
-			if strings.Contains(strings.ToLower(data[i].Name), strings.ToLower(c.Query("name"))) {
+			if strings.Contains(strings.ToLower(data[i].Name), strings.ToLower(c.Query("starName"))) {
 				resList = append(resList, data[i])
 			}
 		}
