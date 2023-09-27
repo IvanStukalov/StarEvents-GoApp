@@ -7,4 +7,5 @@ type Star struct {
 	Distance    float32
 	Magnitude   float32
 	Image       string
+	IsActive    bool
 }

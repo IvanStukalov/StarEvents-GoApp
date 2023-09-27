@@ -2,6 +2,7 @@ package repository
 
 import (
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"strconv"
@@ -51,11 +52,11 @@ func (r *Repository) GetStarByName(name string) (models.Star, error) {
 }
 
 func (r *Repository) GetStars() ([]models.Star, error) {
-	stars := make([]models.Star, 0, 4)
+	var star []models.Star
 
-	r.db.Where("is_active = ?", true).Find(&stars)
-
-	return stars, nil
+	r.db.Find(&star)
+	log.Println("len", len(star))
+	return star, nil
 }
 
 func (r *Repository) CreateProduct(star models.Star) error {

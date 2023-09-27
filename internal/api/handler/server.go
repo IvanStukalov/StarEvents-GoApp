@@ -78,6 +78,6 @@ func (h *Handler) GetStarById(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-	
+
 	render.RenderTmpl(files, item, c)
 }
