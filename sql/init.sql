@@ -14,6 +14,7 @@ create table stars
     name        varchar(30),
     description varchar(200),
     distance    real,
+    age    real,
     magnitude   real,
     image       varchar(30),
     is_active   varchar(20)

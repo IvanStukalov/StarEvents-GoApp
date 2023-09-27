@@ -5,6 +5,7 @@ type Star struct {
 	Name        string
 	Description string
 	Distance    float32
+	Age         float32
 	Magnitude   float32
 	Image       string
 	IsActive    bool
