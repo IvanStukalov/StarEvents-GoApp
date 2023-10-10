@@ -1,4 +1,4 @@
-INSERT INTO stars(id, name, description, distance, age, magnitude, image, is_active)
+INSERT INTO stars(star_id, name, description, distance, age, magnitude, image, is_active)
 VALUES (1, 'Солнце', 'Наша родная звезда, которая светит нам и греет нас', 0, 5.6, -26.7, 'sun.png', true),
 (2, 'Проксима Центавра', 'Звезда, красный карлик, относящаяся к звёздной системе Альфа Центавра, ближайшая к Солнцу звезда', 4.2, 4.8, 11.1, 'Proxima_Centauri.jpg', true),
 (3, 'Звезда Барнарда', 'Одиночная звезда в созвездии Змееносца', 5.96, 1.5, 9.57, 'Barnard.jpeg', true),

@@ -1,5 +1,3 @@
---sudo docker run --name postgresql -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=12345  -p 5432:5432 -d postgres
-
 drop table if exists "events" CASCADE;
 drop table if exists "stars" CASCADE;
 drop table if exists "star_events" CASCADE;
@@ -7,7 +5,7 @@ drop table if exists "users" CASCADE;
 
 create table stars
 (
-    id     integer not null
+    star_id     integer not null
         constraint star_pk
             primary key,
     name        varchar(30),
@@ -53,15 +51,15 @@ alter table events
 
 create table star_events
 (
-    star_event_id integer not null
-        constraint star_event_pk
-            primary key,
-    star_id       integer
-        constraint star_event_star_star_id_fk
-            references stars,
-    event_id      integer
-        constraint star_event_event_event_id_fk
-            references events
+    star_id     integer
+                constraint star_event_star_star_id_fk
+                references stars,
+
+    event_id    integer
+                constraint star_event_event_event_id_fk
+                references events,
+
+    primary key (star_id, event_id)
 );
 
 alter table star_events
