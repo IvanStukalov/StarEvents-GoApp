@@ -1,12 +1,12 @@
 package models
 
 type Star struct {
-	ID          int
-	Name        string
-	Description string
-	Distance    float32
-	Age         float32
-	Magnitude   float32
-	Image       string
-	IsActive    bool
+	ID          int 		`json:"id"`
+	Name        string 	`json:"name"`
+	Description string	`json:"description"`
+	Distance    float32	`json:"distance"`
+	Age         float32	`json:"age"`
+	Magnitude   float32	`json:"magnitude"`
+	Image       string	`json:"image"`
+	IsActive    bool		`json:"is_active"`
 }

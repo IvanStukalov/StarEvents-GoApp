@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/render"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -34,6 +33,7 @@ func (h *Handler) StartServer() {
 	}
 }
 
+// ping
 func (h *Handler) Ping(c *gin.Context) {
 	c.JSON(
 		http.StatusOK,
@@ -42,45 +42,51 @@ func (h *Handler) Ping(c *gin.Context) {
 		})
 }
 
+// get all stars
 func (h *Handler) GetStarList(c *gin.Context) {
 	data, err := h.repo.GetStarsByNameFilter(c.Query("starName"))
 	if err != nil {
+		c.JSON(http.StatusNotFound, nil)
 		log.Println(err)
+		return
 	}
 
-	
+	c.JSON(http.StatusOK, data)
 }
 
+// get one star by id
 func (h *Handler) GetStarById(c *gin.Context) {
-	files := []string{
-		"templates/item.gohtml",
-	}
-
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
 		log.Println(err)
+		return
 	}
 
 	item, err := h.repo.GetStarByID(id)
 	if err != nil {
+		c.JSON(http.StatusNotFound, nil)
 		log.Println(err)
+		return
 	}
 
-	render.RenderTmpl(files, item, c)
+	c.JSON(http.StatusOK, item)
 }
 
 func (h *Handler) DeleteStarById(c *gin.Context) {
 	cardId := c.Param("id")
 	id, err := strconv.Atoi(cardId)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		return
 	}
 
 	err = h.repo.DeleteStarById(id)
 	if err != nil { // если не получилось
+		c.JSON(http.StatusBadRequest, nil)
 		log.Printf("cant get star by id %v", err)
-		c.Error(err)
 		return
 	}
-	c.Redirect(http.StatusFound, "/home")
+
+	c.JSON(http.StatusOK, nil)
 }
