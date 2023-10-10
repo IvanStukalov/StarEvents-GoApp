@@ -43,19 +43,12 @@ func (h *Handler) Ping(c *gin.Context) {
 }
 
 func (h *Handler) GetStarList(c *gin.Context) {
-	files := []string{
-		"templates/list.gohtml",
-	}
-
 	data, err := h.repo.GetStarsByNameFilter(c.Query("starName"))
 	if err != nil {
 		log.Println(err)
 	}
 
-	render.RenderTmpl(files, gin.H{
-		"Items":      data,
-		"QueryParam": c.Query("starName"),
-	}, c)
+	
 }
 
 func (h *Handler) GetStarById(c *gin.Context) {
