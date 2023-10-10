@@ -2,7 +2,6 @@
 
 drop table if exists "events" CASCADE;
 drop table if exists "stars" CASCADE;
-drop table if exists "star" CASCADE;
 drop table if exists "star_events" CASCADE;
 drop table if exists "users" CASCADE;
 

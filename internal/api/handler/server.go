@@ -3,12 +3,10 @@ package handler
 import (
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/render"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 type Handler struct {
@@ -55,25 +53,13 @@ func (h *Handler) GetStarList(c *gin.Context) {
 		"templates/list.gohtml",
 	}
 
-	data, err := h.repo.GetStars()
+	data, err := h.repo.GetStarsByNameFilter(c.Query("starName"))
 	if err != nil {
 		log.Println(err)
 	}
 
-	var resList []models.Star
-
-	if c.Query("starName") != "" {
-		for i := 0; i < len(data); i++ {
-			if strings.Contains(strings.ToLower(data[i].Name), strings.ToLower(c.Query("starName"))) {
-				resList = append(resList, data[i])
-			}
-		}
-	} else {
-		resList = data
-	}
-
 	render.RenderTmpl(files, gin.H{
-		"Items":      resList,
+		"Items":      data,
 		"QueryParam": c.Query("starName"),
 	}, c)
 }

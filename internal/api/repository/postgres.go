@@ -1,10 +1,10 @@
 package repository
 
 import (
+	"strconv"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 type Repository struct {
@@ -36,10 +36,10 @@ func (r *Repository) GetStarByID(starId int) (models.Star, error) {
 	return star, nil
 }
 
-func (r *Repository) GetStars() ([]models.Star, error) {
+func (r *Repository) GetStarsByNameFilter(substring string) ([]models.Star, error) {
 	var star []models.Star
 
-	r.db.Find(&star, "is_active = ?", true)
+	r.db.Where("name ILIKE ?", "%" + substring + "%").Find(&star, "is_active = ?", true)
 	return star, nil
 }
 
