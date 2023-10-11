@@ -5,7 +5,7 @@ drop table if exists "users" CASCADE;
 
 create table stars
 (
-    star_id     integer not null
+    star_id     serial not null
         constraint star_pk
             primary key,
     name        varchar(30),

@@ -1,7 +1,6 @@
 package models
 
 type Star struct {
-	ID          int 		`json:"id"`
 	Name        string 	`json:"name"`
 	Description string	`json:"description"`
 	Distance    float32	`json:"distance"`
