@@ -26,6 +26,7 @@ create table "users"
         constraint user_pk
             primary key,
     name    varchar(50)
+    is_moderator boolean
 );
 
 alter table "users"
@@ -40,9 +41,12 @@ create table events
     status          varchar(20),
     creation_date   timestamp,
     formation_date  timestamp,
-    completion_date integer,
+    completion_date timestamp,
     moderator_id    integer
         constraint event_user_user_id_fk
+            references "users"
+    creator_id integer 
+        constraint event_user_user_id_fk 
             references "users"
 );
 
