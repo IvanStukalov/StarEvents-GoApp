@@ -1,8 +1,7 @@
 package repository
 
 import (
-	// "strconv"
-
+	"log"
 	"strconv"
 
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
@@ -54,9 +53,9 @@ func (r *Repository) DeleteStarById(starId int) error {
 	return nil
 }
 
-func (r *Repository) UpdateStar(starID int, star models.Star) error {
+func (r *Repository) UpdateStar(star models.Star) error {
 	var lastStar models.Star
-	r.db.First(&lastStar, starID)
+	r.db.First(&lastStar, star.ID)
 	
 	if (len(star.Name) != 0) {
 		lastStar.Name = star.Name
@@ -88,13 +87,12 @@ func (r *Repository) UpdateStar(starID int, star models.Star) error {
 }
 
 func (r *Repository) CreateStar(star models.Star) error {
-	var count int64
-	r.db.Model(&models.Star{}).Count(&count)
-
-	err := r.db.Create(&star).Error
+	star.IsActive = true
+	log.Println(star)
+  err := r.db.Create(&star).Error
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }

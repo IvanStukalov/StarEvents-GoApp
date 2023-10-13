@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -127,7 +126,6 @@ func (h *Handler) UpdateStar(c *gin.Context) {
 		return
 	}
 	newStar.Age = float32(age)
-	fmt.Println(newStar.Age)
 
 	magnitude, err := strconv.ParseFloat(c.DefaultQuery("magnitude", "100"), 32)
 		if err != nil {
@@ -155,8 +153,6 @@ func (h *Handler) CreateStar(c *gin.Context) {
     return
 	}
   
-fmt.Println(data)
-
 	err := h.repo.CreateStar(data)
 	if err != nil {
     c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "something wrong"})

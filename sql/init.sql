@@ -4,7 +4,7 @@ drop table if exists "star_events" CASCADE;
 drop table if exists "users" CASCADE;
 
 create table stars (
-    star_id integer not null constraint star_pk primary key,
+    star_id serial constraint star_pk primary key,
     name varchar(30),
     description varchar(200),
     distance real,
