@@ -1,2 +1,2 @@
 db:
-  connection_string: "host=localhost port=5432 user=postgres dbname=postgres options='-c search_path=public' password=12345 sslmode=disable"
+  connection_string: "host=localhost port=5433 user=postgres dbname=postgres options='-c search_path=public' password=12345 sslmode=disable"

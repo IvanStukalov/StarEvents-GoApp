@@ -5,13 +5,12 @@ drop table if exists "users" CASCADE;
 
 create table stars
 (
-    star_id     integer not null
-        constraint star_pk
-            primary key,
+    star_id     integer not null 
+                constraint star_pk primary key,
     name        varchar(30),
     description varchar(200),
     distance    real,
-    age    real,
+    age         real,
     magnitude   real,
     image       varchar(30),
     is_active   varchar(20)
@@ -22,11 +21,10 @@ alter table stars
 
 create table "users"
 (
-    user_id integer not null
-        constraint user_pk
-            primary key,
-    name    varchar(50)
-    is_moderator boolean
+    user_id         integer not null 
+                    constraint user_pk primary key,
+    name            varchar(50),
+    is_moderator    boolean
 );
 
 alter table "users"
@@ -34,20 +32,17 @@ alter table "users"
 
 create table events
 (
-    event_id        integer not null
-        constraint event_pk
-            primary key,
+    event_id        integer not null 
+                    constraint event_pk primary key,
     name            varchar(50),
     status          varchar(20),
     creation_date   timestamp,
     formation_date  timestamp,
     completion_date timestamp,
-    moderator_id    integer
-        constraint event_user_user_id_fk
-            references "users"
-    creator_id integer 
-        constraint event_user_user_id_fk 
-            references "users"
+    moderator_id    integer 
+                    constraint event_moderator_user_id_fk references "users",
+    creator_id      integer 
+                    constraint event_creator_user_id_fk references "users"
 );
 
 alter table events
@@ -55,15 +50,13 @@ alter table events
 
 create table star_events
 (
-    star_id     integer
-                constraint star_event_star_star_id_fk
-                references stars,
+    star_id     integer 
+                constraint star_event_star_star_id_fk references stars,
 
-    event_id    integer
-                constraint star_event_event_event_id_fk
-                references events,
+    event_id    integer 
+                constraint star_event_event_event_id_fk references events,
 
-    primary key (star_id, event_id)
+                primary key (star_id, event_id)
 );
 
 alter table star_events
