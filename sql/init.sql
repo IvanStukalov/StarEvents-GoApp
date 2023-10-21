@@ -4,7 +4,7 @@ drop table if exists "star_events" CASCADE;
 drop table if exists "users" CASCADE;
 
 create table stars (
-    star_id serial constraint star_pk primary key,
+    star_id serial not null constraint star_pk primary key,
     name varchar(30),
     description varchar(200),
     distance real,
@@ -18,7 +18,7 @@ alter table
     stars owner to postgres;
 
 create table "users" (
-    user_id integer not null constraint user_pk primary key,
+    user_id serial not null constraint user_pk primary key,
     name varchar(50),
     is_moderator boolean
 );
@@ -27,7 +27,7 @@ alter table
     "users" owner to postgres;
 
 create table events (
-    event_id integer not null constraint event_pk primary key,
+    event_id serial not null constraint event_pk primary key,
     name varchar(50),
     status varchar(20),
     creation_date timestamp,

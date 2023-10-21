@@ -1,23 +1,42 @@
 package models
 
+import "time"
+
 type Star struct {
-	ID 					int			`json:"star_id"`
-	Name        string 	`json:"name"`
-	Description string	`json:"description"`
-	Distance    float32	`json:"distance"`
-	Age         float32	`json:"age"`
-	Magnitude   float32	`json:"magnitude"`
-	Image       string	`json:"image"`
-	IsActive    bool		`json:"is_active"`
+	ID          int     `json:"star_id"`
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Distance    float32 `json:"distance"`
+	Age         float32 `json:"age"`
+	Magnitude   float32 `json:"magnitude"`
+	Image       string  `json:"image"`
+	IsActive    bool    `json:"is_active"`
 }
 
-type Stars struct {
-	Name        string 	`json:"name"`
-	Description string	`json:"description"`
-	Distance    float32	`json:"distance"`
-	Age         float32	`json:"age"`
-	Magnitude   float32	`json:"magnitude"`
-	Image       string	`json:"image"`
-	IsActive    bool		`json:"is_active"`
+type Event struct {
+	ID             int       `json:"event_id"`
+	Name           string    `json:"name"`
+	Status         string    `json:"status"`
+	CreationDate   time.Time `json:"creation_date"`
+	FormationDate  time.Time `json:"formation_date"`
+	CompletionDate time.Time `json:"completion_date"`
+	ModeratorID    int       `json:"moderator_id"`
+	CreatorID      int       `json:"creator_id"`
 }
 
+type EventDetails struct {
+	ID             int       `json:"event_id"`
+	Name           string    `json:"name"`
+	Status         string    `json:"status"`
+	CreationDate   time.Time `json:"creation_date"`
+	FormationDate  time.Time `json:"formation_date"`
+	CompletionDate time.Time `json:"completion_date"`
+	ModeratorID    int       `json:"moderator_id"`
+	CreatorID      int       `json:"creator_id"`
+	StarsList      []Star    `json:"stars_list"`
+}
+
+type StarEvents struct {
+	StarID  int `json:"star_id"`
+	EventID int `json:"event_id"`
+}
