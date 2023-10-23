@@ -10,7 +10,9 @@ VALUES  ('Алексей', true),
         ('Сергей', false);
 
 INSERT INTO events(name, status, creation_date, formation_date, completion_date, moderator_id, creator_id)
-VALUES ('Превращение в сверхновую', 'fulfilled', '2023-10-14 12:34:56', '2023-10-14 16:34:56', '2023-10-14 18:34:56', 1, 2);
+VALUES ('Превращение в сверхновую', 'fulfilled', '2023-10-14 12:34:56', '2023-10-14 16:34:56', '2023-10-14 18:34:56', 1, 2),
+       ('Затухание', 'pending', '2023-10-14 12:34:56', '2023-10-14 16:34:56', '2023-10-14 18:34:56', 1, 2);
 
 INSERT INTO star_events(star_id, event_id)
-VALUES (1, 1);
+VALUES (1, 1),
+       (3, 2);

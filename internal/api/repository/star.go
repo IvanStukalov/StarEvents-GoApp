@@ -73,3 +73,12 @@ func (r *Repository) CreateStar(star models.Star) error {
 
 	return nil
 }
+
+func (r *Repository) PutIntoEvent(starEvent models.StarEvents) error {
+	err := r.db.Create(&starEvent).Error
+	if err != nil {
+		return err
+	}
+	
+	return nil
+}

@@ -72,6 +72,7 @@ func (h *Handler) UpdateStar(c *gin.Context) {
 	newStar.ID = id
 	newStar.Name = c.DefaultQuery("name", "")
 	newStar.Description = c.DefaultQuery("description", "")
+	newStar.Image = c.DefaultQuery("image", "")
 
 	distance, err := strconv.ParseFloat(c.DefaultQuery("distance", "-1"), 32)
 	if err != nil {
@@ -93,7 +94,6 @@ func (h *Handler) UpdateStar(c *gin.Context) {
 		return
 	}
 	newStar.Magnitude = float32(magnitude)
-	newStar.Image = c.DefaultQuery("image", "")
 
 	err = h.repo.UpdateStar(newStar)
 	if err != nil { // если не получилось
@@ -114,6 +114,33 @@ func (h *Handler) CreateStar(c *gin.Context) {
 	}
 
 	err := h.repo.CreateStar(data)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "something wrong"})
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
+}
+
+func (h *Handler) PutIntoEvent(c *gin.Context) {
+	starEvent := models.StarEvents{} 
+	var err error
+
+	starEvent.StarID, err = strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		log.Println(err)
+		return
+	}
+
+	starEvent.EventID, err = strconv.Atoi(c.DefaultQuery("eventId", "-1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		log.Println(err)
+		return
+	}
+
+	err = h.repo.PutIntoEvent(starEvent)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "something wrong"})
 		return

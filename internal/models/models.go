@@ -14,7 +14,7 @@ type Star struct {
 }
 
 type Event struct {
-	ID             int       `json:"event_id"`
+	ID             int       `json:"event_id" gorm:"primaryKey;column:event_id;not null"`
 	Name           string    `json:"name"`
 	Status         string    `json:"status"`
 	CreationDate   time.Time `json:"creation_date"`
@@ -25,7 +25,7 @@ type Event struct {
 }
 
 type EventDetails struct {
-	ID             int       `json:"event_id"`
+	ID             int       `json:"event_id" gorm:"primaryKey;column:event_id;not null"`
 	Name           string    `json:"name"`
 	Status         string    `json:"status"`
 	CreationDate   time.Time `json:"creation_date"`

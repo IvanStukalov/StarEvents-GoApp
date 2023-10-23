@@ -26,9 +26,10 @@ func (h *Handler) StartServer() {
 	{
 		starRouter.GET("/", h.GetStarList)
 		starRouter.GET("/:id", h.GetStar)
-		starRouter.PUT("/delete/:id", h.DeleteStar)
-		starRouter.PUT("/update/:id", h.UpdateStar)
 		starRouter.POST("/", h.CreateStar)
+		starRouter.PUT("/:id/delete", h.DeleteStar)
+		starRouter.PUT("/:id/update", h.UpdateStar)
+		starRouter.PUT("/:id/event", h.PutIntoEvent)
 	}
 
 	eventRouter := r.Group("event")

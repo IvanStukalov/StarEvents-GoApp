@@ -8,6 +8,7 @@ type Repo interface {
 	DeleteStarById(starId int) error
 	UpdateStar(star models.Star) error
 	CreateStar(star models.Star) error
+	PutIntoEvent(starEvent models.StarEvents) error
 
 	GetEventList() ([]models.Event, error)
 	GetEventByID(eventId int) (models.EventDetails, error)
