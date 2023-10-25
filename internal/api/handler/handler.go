@@ -36,6 +36,17 @@ func (h *Handler) StartServer() {
 	{
 		eventRouter.GET("/", h.GetEventList)
 		eventRouter.GET("/:id", h.GetEvent)
+		eventRouter.PUT("/:id/update", h.UpdateEvent)
+		eventRouter.PUT("/create", h.CreateEvent)
+		eventRouter.PUT("/:id/form", h.FormEvent)
+		eventRouter.PUT("/:id/complete", h.CompleteEvent)
+		eventRouter.PUT("/:id/reject", h.RejectEvent)
+		eventRouter.DELETE("/:id", h.DeleteEvent)
+	}
+
+	starEventRouter := r.Group("star-event")
+	{
+		starEventRouter.DELETE("/:id", h.RemoveFromEvent)
 	}
 
 	// listen and serve on 127.0.0.1:8080

@@ -122,8 +122,9 @@ func (h *Handler) CreateStar(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
+// put star into event
 func (h *Handler) PutIntoEvent(c *gin.Context) {
-	starEvent := models.StarEvents{} 
+	starEvent := models.StarEvents{}
 	var err error
 
 	starEvent.StarID, err = strconv.Atoi(c.Param("id"))
@@ -141,6 +142,35 @@ func (h *Handler) PutIntoEvent(c *gin.Context) {
 	}
 
 	err = h.repo.PutIntoEvent(starEvent)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "something wrong"})
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
+}
+
+// remove from event
+func (h *Handler) RemoveFromEvent(c *gin.Context) {
+	starEvent := models.StarEvents{}
+	var err error
+
+	starEvent.StarID, err = strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		log.Println(err)
+		return
+	}
+
+	starEvent.EventID, err = strconv.Atoi(c.DefaultQuery("eventId", "-1"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		log.Println(err)
+		return
+	}
+
+
+	err = h.repo.RemoveFromEvent(starEvent)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "something wrong"})
 		return

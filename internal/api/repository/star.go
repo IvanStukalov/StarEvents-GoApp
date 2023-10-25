@@ -10,7 +10,7 @@ import (
 func (r *Repository) GetStarsByNameFilter(substring string) ([]models.Star, error) {
 	var star []models.Star
 
-	r.db.Where("name ILIKE ?", "%" + substring + "%").Find(&star, "is_active = ?", true)
+	r.db.Order("star_id").Where("name ILIKE ?", "%" + substring + "%").Find(&star, "is_active = ?", true)
 	return star, nil
 }
 
@@ -80,5 +80,14 @@ func (r *Repository) PutIntoEvent(starEvent models.StarEvents) error {
 		return err
 	}
 	
+	return nil
+}
+
+func (r *Repository) RemoveFromEvent(starEvent models.StarEvents) error {
+	err := r.db.Where("event_id = ? AND star_id = ?", starEvent.EventID, starEvent.StarID).Delete(&starEvent).Error
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

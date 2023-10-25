@@ -40,3 +40,9 @@ type StarEvents struct {
 	StarID  int `json:"star_id"`
 	EventID int `json:"event_id"`
 }
+
+type User struct {
+	UserID      int    `json:"user_id" gorm:"primaryKey;column:user_id;not null"`
+	Name        string `json:"name"`
+	IsModerator bool   `json:"is_moderator"`
+}
