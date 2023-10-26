@@ -45,15 +45,7 @@ func (r *Repository) GetStarByID(starId int) (models.Star, error) {
 	return star, nil
 }
 
-// delete star by id
-func (r *Repository) DeleteStarByID(starId int) error {
-	err := r.db.Exec("UPDATE stars SET is_active=false WHERE id = ?", starId).Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
+// get star image by id
 func (r *Repository) GetStarImageById(starId int) (string, error) {
 	var star models.Star
 
@@ -65,6 +57,42 @@ func (r *Repository) GetStarImageById(starId int) (string, error) {
 	return star.Image, nil
 }
 
+// create star
+func (r *Repository) CreateStar(star models.Star) error {
+	var newStar models.Star
+
+	newStar.Name = star.Name
+	newStar.Description = star.Description
+	newStar.Image = star.Image
+	newStar.IsActive = true
+
+	if star.Age >= 0 && star.Age <= models.UNIVERSAL_AGE {
+		newStar.Age = star.Age
+	} else {
+		return errors.New("star age must be greater than 0 and less than Universal age (13.8 billion years)")
+	}
+
+	if star.Distance >= 0 && star.Distance <= models.VISIBLE_UNIVERSE_RADIUS {
+		newStar.Distance = star.Distance
+	} else {
+		return errors.New("star distance must be greater than 0 and less than visible universe radius (4.65e+10 l.y.)")
+	}
+
+	if star.Magnitude >= models.MIN_MAGNITUDE {
+		newStar.Magnitude = star.Magnitude
+	} else {
+		return errors.New("star magnitude must be greater than minimum possible magnitude (-26.74 - Sun magnitude)")
+	}
+
+	err := r.db.Create(&newStar).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// update star
 func (r *Repository) UpdateStar(star models.Star) error {
 	var lastStar models.Star
 
@@ -105,40 +133,17 @@ func (r *Repository) UpdateStar(star models.Star) error {
 	return nil
 }
 
-func (r *Repository) CreateStar(star models.Star) error {
-	var newStar models.Star
 
-	newStar.Name = star.Name
-	newStar.Description = star.Description
-	newStar.Image = star.Image
-	newStar.IsActive = true
-
-	if star.Age >= 0 && star.Age <= models.UNIVERSAL_AGE {
-		newStar.Age = star.Age
-	} else {
-		return errors.New("star age must be greater than 0 and less than Universal age (13.8 billion years)")
-	}
-
-	if star.Distance >= 0 && star.Distance <= models.VISIBLE_UNIVERSE_RADIUS {
-		newStar.Distance = star.Distance
-	} else {
-		return errors.New("star distance must be greater than 0 and less than visible universe radius (4.65e+10 l.y.)")
-	}
-
-	if star.Magnitude >= models.MIN_MAGNITUDE {
-		newStar.Magnitude = star.Magnitude
-	} else {
-		return errors.New("star magnitude must be greater than minimum possible magnitude (-26.74 - Sun magnitude)")
-	}
-
-	err := r.db.Create(&newStar).Error
+// delete star by id
+func (r *Repository) DeleteStarByID(starId int) error {
+	err := r.db.Exec("UPDATE stars SET is_active=false WHERE id = ?", starId).Error
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
+// put star into event
 func (r *Repository) PutIntoEvent(starEvent models.StarEvents) error {
 	err := r.db.Create(&starEvent).Error
 	if err != nil {
@@ -148,6 +153,7 @@ func (r *Repository) PutIntoEvent(starEvent models.StarEvents) error {
 	return nil
 }
 
+// remove star from event 
 func (r *Repository) RemoveFromEvent(starEvent models.StarEvents) error {
 	err := r.db.Where("event_id = ? AND star_id = ?", starEvent.EventID, starEvent.StarID).Delete(&starEvent).Error
 	if err != nil {

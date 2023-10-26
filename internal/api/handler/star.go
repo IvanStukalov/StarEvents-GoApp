@@ -42,25 +42,69 @@ func (h *Handler) GetStar(c *gin.Context) {
 	c.JSON(http.StatusOK, star)
 }
 
-// delete star
-func (h *Handler) DeleteStar(c *gin.Context) {
-	cardId := c.Param("id")
-	id, err := strconv.Atoi(cardId)
+// create star
+func (h *Handler) CreateStar(c *gin.Context) {
+	var star models.Star
+
+	star.Name = c.Request.FormValue("name")
+	star.Description = c.Request.FormValue("description")
+
+	distanceValue := c.Request.FormValue("distance")
+	if distanceValue != "" {
+		distance, err := strconv.ParseFloat(distanceValue, 32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+		star.Distance = float32(distance)
+	}
+
+	ageValue := c.Request.FormValue("age")
+	if ageValue != "" {
+		age, err := strconv.ParseFloat(ageValue, 32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+		star.Age = float32(age)
+	}
+
+	magnitudeValue := c.Request.FormValue("magnitude")
+	if magnitudeValue != "" {
+		magnitude, err := strconv.ParseFloat(magnitudeValue, 32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+		star.Magnitude = float32(magnitude)
+	}
+
+	file, header, err := c.Request.FormFile("image")
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
 
-	err = h.repo.DeleteStarByID(id)
-	if err != nil {
+	if star.Image, err = h.minio.SaveImage(c.Request.Context(), file, header); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		log.Println(err)
+		return
+	}
+
+	err = h.repo.CreateStar(star)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		log.Println(err)
 		return
 	}
 
 	c.JSON(http.StatusOK, nil)
 }
+
 
 // update star
 func (h *Handler) UpdateStar(c *gin.Context) {
@@ -139,62 +183,19 @@ func (h *Handler) UpdateStar(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-// create star
-func (h *Handler) CreateStar(c *gin.Context) {
-	var star models.Star
-
-	star.Name = c.Request.FormValue("name")
-	star.Description = c.Request.FormValue("description")
-
-	distanceValue := c.Request.FormValue("distance")
-	if distanceValue != "" {
-		distance, err := strconv.ParseFloat(distanceValue, 32)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-			log.Println(err)
-			return
-		}
-		star.Distance = float32(distance)
-	}
-
-	ageValue := c.Request.FormValue("age")
-	if ageValue != "" {
-		age, err := strconv.ParseFloat(ageValue, 32)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-			log.Println(err)
-			return
-		}
-		star.Age = float32(age)
-	}
-
-	magnitudeValue := c.Request.FormValue("magnitude")
-	if magnitudeValue != "" {
-		magnitude, err := strconv.ParseFloat(magnitudeValue, 32)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-			log.Println(err)
-			return
-		}
-		star.Magnitude = float32(magnitude)
-	}
-
-	file, header, err := c.Request.FormFile("image")
+// delete star
+func (h *Handler) DeleteStar(c *gin.Context) {
+	cardId := c.Param("id")
+	id, err := strconv.Atoi(cardId)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
 
-	if star.Image, err = h.minio.SaveImage(c.Request.Context(), file, header); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		log.Println(err)
-		return
-	}
-
-	err = h.repo.CreateStar(star)
+	err = h.repo.DeleteStarByID(id)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
