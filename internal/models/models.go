@@ -2,6 +2,13 @@ package models
 
 import "time"
 
+const (
+	SUN_MAGNITUDE = -26.74
+	MIN_MAGNITUDE = SUN_MAGNITUDE
+	UNIVERSAL_AGE = 13.8
+	VISIBLE_UNIVERSE_RADIUS = 4.65e10
+)
+
 type Star struct {
 	ID          int     `json:"star_id"`
 	Name        string  `json:"name"`

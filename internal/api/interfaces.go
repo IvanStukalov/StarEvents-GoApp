@@ -3,10 +3,11 @@ package api
 import "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
 
 type Repo interface {
-	GetStarsByNameFilter(substring string) ([]models.Star, error)
-	GetStarByID(threatId int) (models.Star, error)
-	DeleteStarById(starId int) error
+	GetFilteredStars(substring string) ([]models.Star, error)
+	GetStarByID(starId int) (models.Star, error)
+	DeleteStarByID(starId int) error
 	UpdateStar(star models.Star) error
+	GetStarImageById(starId int) (string, error)
 	CreateStar(star models.Star) error
 	PutIntoEvent(starEvent models.StarEvents) error
 	RemoveFromEvent(starEvent models.StarEvents) error

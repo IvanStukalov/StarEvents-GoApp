@@ -1,28 +1,52 @@
 package repository
 
 import (
+	"errors"
 	"log"
 	"strconv"
 
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
 )
 
-func (r *Repository) GetStarsByNameFilter(substring string) ([]models.Star, error) {
+// get stars with filter
+func (r *Repository) GetFilteredStars(substring string) ([]models.Star, error) {
 	var star []models.Star
 
-	r.db.Order("star_id").Where("name ILIKE ?", "%" + substring + "%").Find(&star, "is_active = ?", true)
+	if len(substring) != 0 {
+		// if query substring exists
+		err := r.db.Order("star_id").Where("name ILIKE ?", "%"+substring+"%").Find(&star, "is_active = ?", true).Error
+		if err != nil {
+			log.Println(err)
+			return []models.Star{}, err
+		}
+
+	} else {
+		// if query substring is empty
+		err := r.db.Order("star_id").Find(&star, "is_active = ?", true).Error
+		if err != nil {
+			log.Println(err)
+			return []models.Star{}, err
+		}
+	}
+
 	return star, nil
 }
 
+// get star by id
 func (r *Repository) GetStarByID(starId int) (models.Star, error) {
-	star := models.Star{}
+	var star models.Star
 
-	r.db.Find(&star, "star_id = ?", strconv.Itoa(starId))
+	err := r.db.Find(&star, "star_id = ?", strconv.Itoa(starId)).Error
+	if err != nil {
+		log.Println(err)
+		return models.Star{}, err
+	}
 
 	return star, nil
 }
 
-func (r *Repository) DeleteStarById(starId int) error {
+// delete star by id
+func (r *Repository) DeleteStarByID(starId int) error {
 	err := r.db.Exec("UPDATE stars SET is_active=false WHERE id = ?", starId).Error
 	if err != nil {
 		return err
@@ -30,43 +54,84 @@ func (r *Repository) DeleteStarById(starId int) error {
 	return nil
 }
 
+func (r *Repository) GetStarImageById(starId int) (string, error) {
+	var star models.Star
+
+	err := r.db.First(&star, "star_id = ?", starId).Error
+	if err != nil {
+		return "", err
+	}
+
+	return star.Image, nil
+}
+
 func (r *Repository) UpdateStar(star models.Star) error {
 	var lastStar models.Star
-	r.db.First(&lastStar, star.ID)
-	
-	if (len(star.Name) != 0) {
+
+	err := r.db.First(&lastStar, star.ID).Error
+	if err != nil {
+		return err
+	}
+
+	if star.Name != "" {
 		lastStar.Name = star.Name
 	}
 
-	if (len(star.Description) != 0) {
+	if star.Description != "" {
 		lastStar.Description = star.Description
 	}
 
-	if (len(star.Image) != 0) {
+	if star.Image != "" {
 		lastStar.Image = star.Image
 	}
 
-	if (star.Age != -1) {
+	if star.Age >= 0 && star.Age <= models.UNIVERSAL_AGE {
 		lastStar.Age = star.Age
 	}
 
-	if (star.Distance != -1) {
+	if star.Distance >= 0 && star.Distance <= models.VISIBLE_UNIVERSE_RADIUS {
 		lastStar.Distance = star.Distance
 	}
 
-	if (star.Magnitude != 100) {
+	if star.Magnitude >= models.MIN_MAGNITUDE {
 		lastStar.Magnitude = star.Magnitude
 	}
 
-	r.db.Save(&lastStar)
+	err = r.db.Save(&lastStar).Error
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
 func (r *Repository) CreateStar(star models.Star) error {
-	star.IsActive = true
-	log.Println(star)
-  err := r.db.Create(&star).Error
+	var newStar models.Star
+
+	newStar.Name = star.Name
+	newStar.Description = star.Description
+	newStar.Image = star.Image
+	newStar.IsActive = true
+
+	if star.Age >= 0 && star.Age <= models.UNIVERSAL_AGE {
+		newStar.Age = star.Age
+	} else {
+		return errors.New("star age must be greater than 0 and less than Universal age (13.8 billion years)")
+	}
+
+	if star.Distance >= 0 && star.Distance <= models.VISIBLE_UNIVERSE_RADIUS {
+		newStar.Distance = star.Distance
+	} else {
+		return errors.New("star distance must be greater than 0 and less than visible universe radius (4.65e+10 l.y.)")
+	}
+
+	if star.Magnitude >= models.MIN_MAGNITUDE {
+		newStar.Magnitude = star.Magnitude
+	} else {
+		return errors.New("star magnitude must be greater than minimum possible magnitude (-26.74 - Sun magnitude)")
+	}
+
+	err := r.db.Create(&newStar).Error
 	if err != nil {
 		return err
 	}
@@ -79,7 +144,7 @@ func (r *Repository) PutIntoEvent(starEvent models.StarEvents) error {
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 

@@ -6,14 +6,16 @@ import (
 	"strconv"
 
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/utils"
+
 	"github.com/gin-gonic/gin"
 )
 
-// get all stars
+// get stars with filter
 func (h *Handler) GetStarList(c *gin.Context) {
-	data, err := h.repo.GetStarsByNameFilter(c.Query("starName"))
+	data, err := h.repo.GetFilteredStars(c.Query("name"))
 	if err != nil {
-		c.JSON(http.StatusNotFound, nil)
+		c.AbortWithStatusJSON(http.StatusNotFound, nil)
 		log.Println(err)
 		return
 	}
@@ -25,19 +27,19 @@ func (h *Handler) GetStarList(c *gin.Context) {
 func (h *Handler) GetStar(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
 
-	item, err := h.repo.GetStarByID(id)
+	star, err := h.repo.GetStarByID(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, nil)
+		c.AbortWithStatusJSON(http.StatusNotFound, err.Error())
 		log.Println(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, item)
+	c.JSON(http.StatusOK, star)
 }
 
 // delete star
@@ -45,14 +47,15 @@ func (h *Handler) DeleteStar(c *gin.Context) {
 	cardId := c.Param("id")
 	id, err := strconv.Atoi(cardId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		log.Println(err)
 		return
 	}
 
-	err = h.repo.DeleteStarById(id)
+	err = h.repo.DeleteStarByID(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, nil)
-		log.Printf("cant get star by id %v", err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		log.Println(err)
 		return
 	}
 
@@ -61,44 +64,75 @@ func (h *Handler) DeleteStar(c *gin.Context) {
 
 // update star
 func (h *Handler) UpdateStar(c *gin.Context) {
-	cardId := c.Param("id")
-	id, err := strconv.Atoi(cardId)
+	var updatedStar models.Star
+
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		log.Println(err)
 		return
 	}
 
-	newStar := models.Star{}
-	newStar.ID = id
-	newStar.Name = c.DefaultQuery("name", "")
-	newStar.Description = c.DefaultQuery("description", "")
-	newStar.Image = c.DefaultQuery("image", "")
+	updatedStar.ID = id
+	updatedStar.Name = c.Request.FormValue("name")
+	updatedStar.Description = c.Request.FormValue("description")
 
-	distance, err := strconv.ParseFloat(c.DefaultQuery("distance", "-1"), 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
-		return
+	distanceValue := c.Request.FormValue("distance")
+	if distanceValue != "" {
+		distance, err := strconv.ParseFloat(distanceValue, 32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+		updatedStar.Distance = float32(distance)
 	}
-	newStar.Distance = float32(distance)
 
-	age, err := strconv.ParseFloat(c.DefaultQuery("age", "-1"), 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
-		return
+	ageValue := c.Request.FormValue("age")
+	if ageValue != "" {
+		age, err := strconv.ParseFloat(ageValue, 32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+		updatedStar.Age = float32(age)
 	}
-	newStar.Age = float32(age)
 
-	magnitude, err := strconv.ParseFloat(c.DefaultQuery("magnitude", "100"), 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
-		return
+	magnitudeValue := c.Request.FormValue("magnitude")
+	if magnitudeValue != "" {
+		magnitude, err := strconv.ParseFloat(magnitudeValue, 32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+		updatedStar.Magnitude = float32(magnitude)
 	}
-	newStar.Magnitude = float32(magnitude)
 
-	err = h.repo.UpdateStar(newStar)
-	if err != nil { // если не получилось
-		c.JSON(http.StatusBadRequest, nil)
-		log.Printf("cant get star by id %v", err)
+	file, header, err := c.Request.FormFile("image")
+
+	if header != nil && header.Size != 0 {
+		if updatedStar.Image, err = h.minio.SaveImage(c.Request.Context(), file, header); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		// delete old image from db
+		url, err := h.repo.GetStarImageById(updatedStar.ID)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+			log.Println(err)
+			return
+		}
+		// delete image from minio
+		h.minio.DeleteImage(c.Request.Context(), utils.ExtractObjectNameFromUrl(url))
+	}
+
+	err = h.repo.UpdateStar(updatedStar)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		log.Println(err)
 		return
 	}
 
@@ -107,15 +141,61 @@ func (h *Handler) UpdateStar(c *gin.Context) {
 
 // create star
 func (h *Handler) CreateStar(c *gin.Context) {
-	var data models.Star
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert json"})
+	var star models.Star
+
+	star.Name = c.Request.FormValue("name")
+	star.Description = c.Request.FormValue("description")
+
+	distanceValue := c.Request.FormValue("distance")
+	if distanceValue != "" {
+		distance, err := strconv.ParseFloat(distanceValue, 32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+		star.Distance = float32(distance)
+	}
+
+	ageValue := c.Request.FormValue("age")
+	if ageValue != "" {
+		age, err := strconv.ParseFloat(ageValue, 32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+		star.Age = float32(age)
+	}
+
+	magnitudeValue := c.Request.FormValue("magnitude")
+	if magnitudeValue != "" {
+		magnitude, err := strconv.ParseFloat(magnitudeValue, 32)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+		star.Magnitude = float32(magnitude)
+	}
+
+	file, header, err := c.Request.FormFile("image")
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		log.Println(err)
 		return
 	}
 
-	err := h.repo.CreateStar(data)
+	if star.Image, err = h.minio.SaveImage(c.Request.Context(), file, header); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		log.Println(err)
+		return
+	}
+
+	err = h.repo.CreateStar(star)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "something wrong"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		log.Println(err)
 		return
 	}
 
@@ -124,26 +204,27 @@ func (h *Handler) CreateStar(c *gin.Context) {
 
 // put star into event
 func (h *Handler) PutIntoEvent(c *gin.Context) {
-	starEvent := models.StarEvents{}
+	var starEvent models.StarEvents
 	var err error
 
 	starEvent.StarID, err = strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
 
-	starEvent.EventID, err = strconv.Atoi(c.DefaultQuery("eventId", "-1"))
+	starEvent.EventID, err = strconv.Atoi(c.Request.FormValue("event_id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
 
 	err = h.repo.PutIntoEvent(starEvent)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "something wrong"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		log.Println(err)
 		return
 	}
 
@@ -152,27 +233,27 @@ func (h *Handler) PutIntoEvent(c *gin.Context) {
 
 // remove from event
 func (h *Handler) RemoveFromEvent(c *gin.Context) {
-	starEvent := models.StarEvents{}
+	var starEvent models.StarEvents
 	var err error
 
-	starEvent.StarID, err = strconv.Atoi(c.Param("id"))
+	starEvent.EventID, err = strconv.Atoi(c.Request.FormValue("event_id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
 
-	starEvent.EventID, err = strconv.Atoi(c.DefaultQuery("eventId", "-1"))
+	starEvent.StarID, err = strconv.Atoi(c.Request.FormValue("star_id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
-
 
 	err = h.repo.RemoveFromEvent(starEvent)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "something wrong"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		log.Println(err)
 		return
 	}
 

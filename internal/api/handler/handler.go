@@ -3,16 +3,19 @@ package handler
 import (
 	"log"
 	"net/http"
+
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/minio"
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	repo api.Repo
+	repo  api.Repo
+	minio minio.Client
 }
 
-func NewHandler(repo api.Repo) *Handler {
-	return &Handler{repo: repo}
+func NewHandler(repo api.Repo, minio minio.Client) *Handler {
+	return &Handler{repo: repo, minio: minio}
 }
 
 func (h *Handler) StartServer() {
@@ -22,7 +25,7 @@ func (h *Handler) StartServer() {
 
 	r.GET("/ping", h.Ping)
 
-	starRouter := r.Group("star") 
+	starRouter := r.Group("star")
 	{
 		starRouter.GET("/", h.GetStarList)
 		starRouter.GET("/:id", h.GetStar)
@@ -46,7 +49,7 @@ func (h *Handler) StartServer() {
 
 	starEventRouter := r.Group("star-event")
 	{
-		starEventRouter.DELETE("/:id", h.RemoveFromEvent)
+		starEventRouter.DELETE("/", h.RemoveFromEvent)
 	}
 
 	// listen and serve on 127.0.0.1:8080

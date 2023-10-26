@@ -1,15 +1,16 @@
 package main
 
 import (
+	"context"
 	"time"
 
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/handler"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/repository"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg"
+	minio "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/minio"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	minio "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/minio"
 )
 
 func main() {
@@ -43,7 +44,7 @@ func main() {
 		log.Error(err)
 	}
 
-	h := handler.NewHandler(repo)
+	h := handler.NewHandler(repo, minioClient)
 	h.StartServer()
 }
 

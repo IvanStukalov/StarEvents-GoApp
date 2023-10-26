@@ -6,4 +6,4 @@ minio:
   location: "us-east-1"
   accessKeyId: "minio"
   secretAccessKey: "minio124"
-  bucketName: "threats"
+  bucketName: "stars"
