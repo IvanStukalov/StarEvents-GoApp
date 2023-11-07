@@ -7,14 +7,14 @@ import (
 func CastEvent(event models.Event, stars []models.Star) models.EventDetails {
 	eventDetails := models.EventDetails{}
 
-	eventDetails.ID = event.ID
-	eventDetails.Name = event.Name
-	eventDetails.Status = event.Status
-	eventDetails.CreationDate = event.CreationDate
-	eventDetails.FormationDate = event.FormationDate
-	eventDetails.CompletionDate = event.CompletionDate
-	eventDetails.ModeratorID = event.ModeratorID
-	eventDetails.CreatorID = event.CreatorID
+	eventDetails.Event.ID = event.ID
+	eventDetails.Event.Name = event.Name
+	eventDetails.Event.Status = event.Status
+	eventDetails.Event.CreationDate = event.CreationDate
+	eventDetails.Event.FormationDate = event.FormationDate
+	eventDetails.Event.CompletionDate = event.CompletionDate
+	eventDetails.Event.ModeratorID = event.ModeratorID
+	eventDetails.Event.CreatorID = event.CreatorID
 	eventDetails.StarsList = stars
 
 	return eventDetails

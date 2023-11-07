@@ -51,14 +51,14 @@ func (h *Handler) GetEventList(c *gin.Context) {
 func (h *Handler) GetEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
 
 	eventDetails, err := h.repo.GetEventByID(id)
 	if err != nil {
-		c.JSON(http.StatusNotFound, nil)
+		c.AbortWithStatusJSON(http.StatusNotFound, err.Error())
 		log.Println(err)
 		return
 	}

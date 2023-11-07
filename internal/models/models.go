@@ -3,9 +3,9 @@ package models
 import "time"
 
 const (
-	SUN_MAGNITUDE = -26.74
-	MIN_MAGNITUDE = SUN_MAGNITUDE
-	UNIVERSAL_AGE = 13.8
+	SUN_MAGNITUDE           = -26.74
+	MIN_MAGNITUDE           = SUN_MAGNITUDE
+	UNIVERSAL_AGE           = 13.8
 	VISIBLE_UNIVERSE_RADIUS = 4.65e10
 )
 
@@ -32,15 +32,8 @@ type Event struct {
 }
 
 type EventDetails struct {
-	ID             int       `json:"event_id" gorm:"primaryKey;column:event_id;not null"`
-	Name           string    `json:"name"`
-	Status         string    `json:"status"`
-	CreationDate   time.Time `json:"creation_date"`
-	FormationDate  time.Time `json:"formation_date"`
-	CompletionDate time.Time `json:"completion_date"`
-	ModeratorID    int       `json:"moderator_id"`
-	CreatorID      int       `json:"creator_id"`
-	StarsList      []Star    `json:"stars_list"`
+	Event     Event  `json:"event"`
+	StarsList []Star `json:"stars_list"`
 }
 
 type StarEvents struct {
