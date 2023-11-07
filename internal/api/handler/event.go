@@ -13,9 +13,33 @@ import (
 
 // get list of events
 func (h *Handler) GetEventList(c *gin.Context) {
-	eventList, err := h.repo.GetEventList()
+	var startFormation time.Time
+	var endFormation time.Time
+	var err error
+
+	status := c.Query("status")
+
+	if c.Query("start_formation") != "" {
+		startFormation, err = time.Parse(time.DateTime, c.Query("start_formation"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+	}
+
+	if c.Query("end_formation") != "" {
+		endFormation, err = time.Parse(time.DateTime, c.Query("end_formation"))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
+	}
+
+	eventList, err := h.repo.GetEventList(status, startFormation, endFormation)
 	if err != nil {
-		c.JSON(http.StatusNotFound, nil)
+		c.AbortWithStatusJSON(http.StatusNotFound, err.Error())
 		log.Println(err)
 		return
 	}

@@ -1,6 +1,10 @@
 package api
 
-import "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+import (
+	"time"
+
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+)
 
 type Repo interface {
 	GetFilteredStars(substring string) ([]models.Star, error)
@@ -12,7 +16,7 @@ type Repo interface {
 	PutIntoEvent(starEvent models.StarEvents) error
 	RemoveFromEvent(starEvent models.StarEvents) error
 
-	GetEventList() ([]models.Event, error)
+	GetEventList(status string, startFormation time.Time, endFormation time.Time) ([]models.Event, error)
 	GetEventByID(eventId int) (models.EventDetails, error)
 	UpdateEvent(event models.Event) error
 	CreateEvent(event models.Event) (models.Event, error)

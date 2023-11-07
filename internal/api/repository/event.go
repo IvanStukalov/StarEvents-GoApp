@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -8,14 +10,39 @@ import (
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg"
 )
 
-func (r *Repository) GetEventList() ([]models.Event, error) {
+// get list of events
+func (r *Repository) GetEventList(status string, startFormation time.Time, endFormation time.Time) ([]models.Event, error) {
 	var events []models.Event
+	var queryCondition string
+	var wasPrevCond bool
 
-	r.db.Order("event_id").Find(&events)
+	if status != "" {
+		queryCondition = fmt.Sprintf("status = '%s'", status)
+		wasPrevCond = true
+	}
+
+	if !startFormation.IsZero() {
+		if wasPrevCond {
+			queryCondition += " AND "
+		}
+		queryCondition += fmt.Sprintf("formation_date > '%v'", startFormation.Format(time.DateTime))
+		wasPrevCond = true
+	}
+
+	if !endFormation.IsZero() {
+		if wasPrevCond {
+			queryCondition += " AND "
+		}
+		queryCondition += fmt.Sprintf("formation_date < '%v'", endFormation.Format(time.DateTime))
+	}
+
+	log.Println(queryCondition)
+	r.db.Order("event_id").Find(&events, queryCondition)
 
 	return events, nil
 }
 
+// get event by ID
 func (r *Repository) GetEventByID(eventId int) (models.EventDetails, error) {
 	event := models.Event{}
 	r.db.Find(&event, "event_id = ?", strconv.Itoa(eventId))
