@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -66,26 +65,34 @@ func (h *Handler) GetEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, eventDetails)
 }
 
-// update event by id
-func (h *Handler) UpdateEvent(c *gin.Context) {
-	var event models.Event
-	var err error
-
-	if err := c.BindJSON(&event); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert json"})
-		return
-	}
-
-	event.ID, err = strconv.Atoi(c.Param("id"))
+func (h *Handler) ChangeEvent(c *gin.Context) {
+	eventId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		log.Println(err)
 		return
 	}
 
-	err = h.repo.UpdateEvent(event)
+	name := c.Query("name")
+	err = h.repo.ChangeEvent(eventId, name)
+}
+
+// put star into event
+func (h *Handler) PutIntoEvent(c *gin.Context) {
+	var eventMsg models.EventMsg
+
+	err := c.BindJSON(&eventMsg)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "something wrong"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	eventMsg.CreatorID = h.repo.GetCreatorId()
+	log.Println(eventMsg)
+
+	err = h.repo.PutIntoEvent(eventMsg)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		log.Println(err)
 		return
 	}
@@ -93,115 +100,48 @@ func (h *Handler) UpdateEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-// create new event
-func (h *Handler) CreateEvent(c *gin.Context) {
-	event := models.Event{}
-
-	if err := c.BindJSON(&event); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert json"})
-		return
-	}
-
-	creator, err := h.repo.GetCreatorId()
-	fmt.Println(creator)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"err_msg": "cannot find creator"})
-		return
-	}
-
-	moderator, err := h.repo.GetModeratorId()
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"err_msg": "cannot find moderator"})
-		return
-	}
-	fmt.Println(moderator)
-
-	event.CreatorID = creator
-	event.ModeratorID = moderator
-	event.Status = "pending"
-	event.CreationDate = time.Now()
-
-	newEvent, err := h.repo.CreateEvent(event)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "cannot create event"})
-		return
-	}
-
-	c.JSON(http.StatusOK, newEvent)
-}
-
-// form created event
-func (h *Handler) FormEvent(c *gin.Context) {
-	eventId, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
-		log.Println(err)
-		return
-	}
-
-	formedEvent, err := h.repo.FormEvent(eventId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "cannot form event"})
-		log.Println(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, formedEvent)
-}
-
-// complete event
-func (h *Handler) CompleteEvent(c *gin.Context) {
-	eventId, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
-		log.Println(err)
-		return
-	}
-
-	completedEvent, err := h.repo.CompleteEvent(eventId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "cannot complete event"})
-		log.Println(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, completedEvent)
-}
-
-// reject event
-func (h *Handler) RejectEvent(c *gin.Context) {
-	eventId, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
-		log.Println(err)
-		return
-	}
-
-	rejectedEvent, err := h.repo.RejectEvent(eventId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "cannot reject event"})
-		log.Println(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, rejectedEvent)
-}
-
-// delete event
+// deleting event with status
 func (h *Handler) DeleteEvent(c *gin.Context) {
-	eventId, err := strconv.Atoi(c.Param("id"))
+	creatorId := h.repo.GetCreatorId()
+	err := h.repo.DeleteEvent(creatorId)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"err_msg": "cannot convert id to int"})
-		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err = h.repo.DeleteEvent(eventId)
+	c.JSON(http.StatusOK, gin.H{"message": "событие успешно удалено"})
+}
+
+// for
+func (h *Handler) FormEvent(c *gin.Context) {
+	err := h.repo.FormEvent(h.repo.GetCreatorId())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"err_msg": "cannot delete event"})
-		log.Println(err)
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, nil)
+	c.JSON(http.StatusOK, gin.H{"message": "Статус изменен"})
+}
+
+func (h *Handler) ChangeEventStatus(c *gin.Context) {
+	status := c.Query("status")
+	if status != models.StatusAccepted && status != models.StatusCanceled && status != models.StatusClosed {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Поменять статус можно только на 'accepted, 'closed' и 'canceled'"})
+		return
+	}
+
+	eventIdStr := c.Param("id")
+	eventId, err := strconv.Atoi(eventIdStr)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, err)
+		return
+	}
+
+	err = h.repo.ChangeEventStatus(eventId, status)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Статус изменен"})
+	return
 }

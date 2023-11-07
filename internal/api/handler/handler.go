@@ -32,24 +32,22 @@ func (h *Handler) StartServer() {
 		starRouter.POST("/", h.CreateStar)
 		starRouter.PUT("/:id/delete", h.DeleteStar)
 		starRouter.PUT("/:id/update", h.UpdateStar)
-		starRouter.PUT("/:id/event", h.PutIntoEvent)
 	}
 
 	eventRouter := r.Group("event")
 	{
 		eventRouter.GET("/", h.GetEventList)
 		eventRouter.GET("/:id", h.GetEvent)
-		eventRouter.PUT("/:id/update", h.UpdateEvent)
-		eventRouter.PUT("/create", h.CreateEvent)
+		eventRouter.PUT("/:id", h.ChangeEvent)
+		eventRouter.PUT("/star", h.PutIntoEvent)
+		eventRouter.PUT("/:id/delete", h.DeleteEvent)
 		eventRouter.PUT("/:id/form", h.FormEvent)
-		eventRouter.PUT("/:id/complete", h.CompleteEvent)
-		eventRouter.PUT("/:id/reject", h.RejectEvent)
-		eventRouter.DELETE("/:id", h.DeleteEvent)
+		eventRouter.PUT("/:id/status", h.ChangeEventStatus)
 	}
 
 	starEventRouter := r.Group("star-event")
 	{
-		starEventRouter.DELETE("/", h.RemoveFromEvent)
+		starEventRouter.DELETE("/:star-id", h.RemoveStarFromEvent)
 	}
 
 	// listen and serve on 127.0.0.1:8080

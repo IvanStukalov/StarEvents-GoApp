@@ -66,19 +66,19 @@ func (r *Repository) CreateStar(star models.Star) error {
 	newStar.Image = star.Image
 	newStar.IsActive = true
 
-	if star.Age >= 0 && star.Age <= models.UNIVERSAL_AGE {
+	if star.Age >= 0 && star.Age <= models.UniversalAge {
 		newStar.Age = star.Age
 	} else {
 		return errors.New("star age must be greater than 0 and less than Universal age (13.8 billion years)")
 	}
 
-	if star.Distance >= 0 && star.Distance <= models.VISIBLE_UNIVERSE_RADIUS {
+	if star.Distance >= 0 && star.Distance <= models.VisibleUniverseRadius {
 		newStar.Distance = star.Distance
 	} else {
 		return errors.New("star distance must be greater than 0 and less than visible universe radius (4.65e+10 l.y.)")
 	}
 
-	if star.Magnitude >= models.MIN_MAGNITUDE {
+	if star.Magnitude >= models.MinMagnitude {
 		newStar.Magnitude = star.Magnitude
 	} else {
 		return errors.New("star magnitude must be greater than minimum possible magnitude (-26.74 - Sun magnitude)")
@@ -113,15 +113,15 @@ func (r *Repository) UpdateStar(star models.Star) error {
 		lastStar.Image = star.Image
 	}
 
-	if star.Age >= 0 && star.Age <= models.UNIVERSAL_AGE {
+	if star.Age >= 0 && star.Age <= models.UniversalAge {
 		lastStar.Age = star.Age
 	}
 
-	if star.Distance >= 0 && star.Distance <= models.VISIBLE_UNIVERSE_RADIUS {
+	if star.Distance >= 0 && star.Distance <= models.VisibleUniverseRadius {
 		lastStar.Distance = star.Distance
 	}
 
-	if star.Magnitude >= models.MIN_MAGNITUDE {
+	if star.Magnitude >= models.MinMagnitude {
 		lastStar.Magnitude = star.Magnitude
 	}
 
@@ -133,27 +133,16 @@ func (r *Repository) UpdateStar(star models.Star) error {
 	return nil
 }
 
-
 // delete star by id
 func (r *Repository) DeleteStarByID(starId int) error {
-	err := r.db.Exec("UPDATE stars SET is_active=false WHERE id = ?", starId).Error
+	err := r.db.Exec("UPDATE stars SET is_active=false WHERE star_id = ?", starId).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// put star into event
-func (r *Repository) PutIntoEvent(starEvent models.StarEvents) error {
-	err := r.db.Create(&starEvent).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// remove star from event 
+// remove star from event
 func (r *Repository) RemoveFromEvent(starEvent models.StarEvents) error {
 	err := r.db.Where("event_id = ? AND star_id = ?", starEvent.EventID, starEvent.StarID).Delete(&starEvent).Error
 	if err != nil {

@@ -2,12 +2,12 @@ package repository
 
 import (
 	"fmt"
+	"gorm.io/gorm"
 	"log"
 	"strconv"
 	"time"
 
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg"
 )
 
 // get list of events
@@ -37,7 +37,7 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 	}
 
 	log.Println(queryCondition)
-	r.db.Order("event_id").Find(&events, queryCondition)
+	r.db.Where("NOT status = ?", models.StatusDeleted).Order("event_id").Find(&events, queryCondition)
 
 	return events, nil
 }
@@ -59,96 +59,106 @@ func (r *Repository) GetEventByID(eventId int) (models.EventDetails, error) {
 		}
 	}
 
-	eventDetails := pkg.CastEvent(event, stars)
+	eventDetails := models.EventDetails{
+		Event:     event,
+		StarsList: stars,
+	}
 
 	return eventDetails, nil
 }
 
-func (r *Repository) UpdateEvent(event models.Event) error {
-	var lastEvent models.Event
-	r.db.Select("status").Where("event_id = ?", event.ID).First(&lastEvent)
+func (r *Repository) ChangeEvent(eventId int, name string) error {
+	var event models.Event
+	r.db.Where("event_id = ?", eventId).First(&event)
 
-	event.Status = lastEvent.Status
+	event.Name = name
 
-	if err := r.db.Save(&event).Error; err != nil {
-		return err
+	res := r.db.Save(&event)
+
+	return res.Error
+}
+
+// put star into event
+func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) error {
+	var draft models.Event
+	r.db.Where("creator_id = ?", eventMsg.CreatorID).Where("status = ?", models.StatusCreated).First(&draft)
+
+	if draft.ID == 0 {
+		newEvent := models.Event{
+			CreatorID:    eventMsg.CreatorID,
+			ModeratorID:  r.GetModeratorId(),
+			Status:       models.StatusCreated,
+			CreationDate: time.Now(),
+		}
+		res := r.db.Create(&newEvent)
+		if res.Error != nil {
+			return res.Error
+		}
+		draft = newEvent
+	}
+
+	starEvent := models.StarEvents{
+		EventID: draft.ID,
+		StarID:  eventMsg.StarID,
+	}
+
+	res := r.db.Create(&starEvent)
+	if res.Error != nil {
+		return res.Error
 	}
 
 	return nil
 }
 
-func (r *Repository) CreateEvent(event models.Event) (models.Event, error) {
-	if err := r.db.Create(&event).Error; err != nil {
-		return models.Event{}, err
+func (r *Repository) DeleteEvent(creatorId int) error {
+	var event models.Event
+	res := r.db.Where("status = ?", models.StatusCreated).First(&event, "creator_id = ?", creatorId)
+	if res.Error != nil {
+		return res.Error
 	}
 
-	return event, nil
+	event.Status = models.StatusDeleted
+	res = r.db.Save(event)
+	return res.Error
 }
 
-func (r *Repository) FormEvent(eventId int) (models.Event, error) {
-	event := models.Event{}
-
-	err := r.db.Find(&event, "event_id = ?", eventId).Error
-	if err != nil {
-		return models.Event{}, err
+func (r *Repository) FormEvent(creatorId int) error {
+	var event models.Event
+	err := r.db.Where("status = ?", models.StatusCreated).First(&event, "creator_id = ?", creatorId)
+	if err.Error != nil {
+		return err.Error
 	}
 
-	event.Status = "formed"
+	event.Status = models.StatusFormed
 	event.FormationDate = time.Now()
 
-	err = r.db.Save(&event).Error
-	if err != nil {
-		return models.Event{}, err
-	}
+	res := r.db.Save(&event)
 
-	return event, nil
+	return res.Error
 }
 
-func (r *Repository) CompleteEvent(eventId int) (models.Event, error) {
-	event := models.Event{}
+func (r *Repository) ChangeEventStatus(eventId int, status string) error {
+	var event models.Event
 
-	err := r.db.Find(&event, "event_id = ?", eventId).Error
-	if err != nil {
-		return models.Event{}, err
+	err := r.db.Where("status = ?", models.StatusFormed).First(&event, "event_id = ?", eventId)
+	if err.Error != nil {
+		return err.Error
 	}
 
-	event.Status = "fulfilled"
+	event.Status = status
 	event.CompletionDate = time.Now()
+	res := r.db.Save(&event)
 
-	err = r.db.Save(&event).Error
-	if err != nil {
-		return models.Event{}, err
-	}
-
-	return event, nil
+	return res.Error
 }
 
-func (r *Repository) RejectEvent(eventId int) (models.Event, error) {
-	event := models.Event{}
+func (r *Repository) GetDraft(creatorId int) (int, error) {
+	var event models.Event
 
-	err := r.db.Find(&event, "event_id = ?", eventId).Error
-	if err != nil {
-		return models.Event{}, err
+	err := r.db.Where("status = ?", models.StatusCreated).First(&event, "creator_id = ?", creatorId)
+	if err.Error != nil && err.Error != gorm.ErrRecordNotFound {
+		return 0, err.Error
 	}
 
-	event.Status = "rejected"
-	event.CompletionDate = time.Now()
-
-	err = r.db.Save(&event).Error
-	if err != nil {
-		return models.Event{}, err
-	}
-
-	return event, nil
-}
-
-func (r *Repository) DeleteEvent(eventId int) error {
-	event := models.Event{}
-
-	err := r.db.Where("event_id = ?", eventId).Delete(&event).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return event.ID, nil
 }

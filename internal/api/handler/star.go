@@ -13,14 +13,21 @@ import (
 
 // get stars with filter
 func (h *Handler) GetStarList(c *gin.Context) {
-	data, err := h.repo.GetFilteredStars(c.Query("name"))
+	starList, err := h.repo.GetFilteredStars(c.Query("name"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, nil)
 		log.Println(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	draftId, err := h.repo.GetDraft(h.repo.GetCreatorId())
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, nil)
+		log.Println(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"stars": starList, "draft_id": draftId})
 }
 
 // get one star by id
@@ -105,7 +112,6 @@ func (h *Handler) CreateStar(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-
 // update star
 func (h *Handler) UpdateStar(c *gin.Context) {
 	var updatedStar models.Star
@@ -170,7 +176,12 @@ func (h *Handler) UpdateStar(c *gin.Context) {
 			return
 		}
 		// delete image from minio
-		h.minio.DeleteImage(c.Request.Context(), utils.ExtractObjectNameFromUrl(url))
+		err = h.minio.DeleteImage(c.Request.Context(), utils.ExtractObjectNameFromUrl(url))
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+			log.Println(err)
+			return
+		}
 	}
 
 	err = h.repo.UpdateStar(updatedStar)
@@ -196,64 +207,6 @@ func (h *Handler) DeleteStar(c *gin.Context) {
 	err = h.repo.DeleteStarByID(id)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		log.Println(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, nil)
-}
-
-// put star into event
-func (h *Handler) PutIntoEvent(c *gin.Context) {
-	var starEvent models.StarEvents
-	var err error
-
-	starEvent.StarID, err = strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		log.Println(err)
-		return
-	}
-
-	starEvent.EventID, err = strconv.Atoi(c.Request.FormValue("event_id"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		log.Println(err)
-		return
-	}
-
-	err = h.repo.PutIntoEvent(starEvent)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-		log.Println(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, nil)
-}
-
-// remove from event
-func (h *Handler) RemoveFromEvent(c *gin.Context) {
-	var starEvent models.StarEvents
-	var err error
-
-	starEvent.EventID, err = strconv.Atoi(c.Request.FormValue("event_id"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		log.Println(err)
-		return
-	}
-
-	starEvent.StarID, err = strconv.Atoi(c.Request.FormValue("star_id"))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		log.Println(err)
-		return
-	}
-
-	err = h.repo.RemoveFromEvent(starEvent)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		log.Println(err)
 		return
 	}
