@@ -65,7 +65,7 @@ func (h *Handler) GetEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, eventDetails)
 }
 
-func (h *Handler) ChangeEvent(c *gin.Context) {
+func (h *Handler) UpdateEvent(c *gin.Context) {
 	eventId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
@@ -74,7 +74,7 @@ func (h *Handler) ChangeEvent(c *gin.Context) {
 	}
 
 	name := c.Query("name")
-	err = h.repo.ChangeEvent(eventId, name)
+	err = h.repo.UpdateEvent(eventId, name)
 }
 
 // put star into event

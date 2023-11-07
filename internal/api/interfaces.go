@@ -17,7 +17,7 @@ type Repo interface {
 
 	GetEventList(status string, startFormation time.Time, endFormation time.Time) ([]models.Event, error)
 	GetEventByID(eventId int) (models.EventDetails, error)
-	ChangeEvent(eventId int, name string) error
+	UpdateEvent(eventId int, name string) error
 	PutIntoEvent(eventMsg models.EventMsg) error
 	DeleteEvent(creatorId int) error
 	FormEvent(creatorId int) error

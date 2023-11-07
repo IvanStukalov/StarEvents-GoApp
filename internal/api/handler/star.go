@@ -211,5 +211,21 @@ func (h *Handler) DeleteStar(c *gin.Context) {
 		return
 	}
 
+	// delete old image from db
+	url, err := h.repo.GetStarImageById(id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		log.Println(err)
+		return
+	}
+
+	// delete image from minio
+	err = h.minio.DeleteImage(c.Request.Context(), utils.ExtractObjectNameFromUrl(url))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		log.Println(err)
+		return
+	}
+
 	c.JSON(http.StatusOK, nil)
 }

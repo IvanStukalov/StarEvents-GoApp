@@ -67,7 +67,7 @@ func (r *Repository) GetEventByID(eventId int) (models.EventDetails, error) {
 	return eventDetails, nil
 }
 
-func (r *Repository) ChangeEvent(eventId int, name string) error {
+func (r *Repository) UpdateEvent(eventId int, name string) error {
 	var event models.Event
 	r.db.Where("event_id = ?", eventId).First(&event)
 
