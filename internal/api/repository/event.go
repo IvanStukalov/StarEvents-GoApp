@@ -86,8 +86,8 @@ func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) error {
 	if draft.ID == 0 {
 		newEvent := models.Event{
 			CreatorID:    eventMsg.CreatorID,
-			ModeratorID:  r.GetModeratorId(),
 			Status:       models.StatusCreated,
+			ModeratorID:  r.GetModeratorId(),
 			CreationDate: time.Now(),
 		}
 		res := r.db.Create(&newEvent)

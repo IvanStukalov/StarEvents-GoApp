@@ -40,8 +40,8 @@ func (h *Handler) StartServer() {
 		eventRouter.GET("/:id", h.GetEvent)
 		eventRouter.PUT("/:id", h.UpdateEvent)
 		eventRouter.PUT("/star", h.PutIntoEvent)
-		eventRouter.PUT("/:id/delete", h.DeleteEvent)
-		eventRouter.PUT("/:id/form", h.FormEvent)
+		eventRouter.PUT("/delete", h.DeleteEvent)
+		eventRouter.PUT("/form", h.FormEvent)
 		eventRouter.PUT("/:id/status", h.ChangeEventStatus)
 	}
 
