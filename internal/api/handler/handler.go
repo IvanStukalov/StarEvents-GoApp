@@ -23,9 +23,11 @@ func (h *Handler) StartServer() {
 
 	r := gin.Default()
 
-	r.GET("/ping", h.Ping)
+	api := r.Group("api")
 
-	starRouter := r.Group("star")
+	api.GET("/ping", h.Ping)
+
+	starRouter := api.Group("star")
 	{
 		starRouter.GET("/", h.GetStarList)
 		starRouter.GET("/:id", h.GetStar)
@@ -34,7 +36,7 @@ func (h *Handler) StartServer() {
 		starRouter.PUT("/:id/update", h.UpdateStar)
 	}
 
-	eventRouter := r.Group("event")
+	eventRouter := api.Group("event")
 	{
 		eventRouter.GET("/", h.GetEventList)
 		eventRouter.GET("/:id", h.GetEvent)
@@ -45,7 +47,7 @@ func (h *Handler) StartServer() {
 		eventRouter.PUT("/:id/status", h.ChangeEventStatus)
 	}
 
-	starEventRouter := r.Group("star-event")
+	starEventRouter := api.Group("star-event")
 	{
 		starEventRouter.DELETE("/:star-id", h.RemoveStarFromEvent)
 	}
