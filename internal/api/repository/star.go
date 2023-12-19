@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -9,12 +10,37 @@ import (
 )
 
 // get stars with filter
-func (r *Repository) GetFilteredStars(substring string) ([]models.Star, error) {
+func (r *Repository) GetFilteredStars(substring string, distTop string, distBot string, ageTop string, ageBot string, magTop string, magBot string) ([]models.Star, error) {
 	var star []models.Star
+	var queryCondition = "is_active = true"
+
+	if distTop != "" {
+		queryCondition = fmt.Sprintf(queryCondition+" AND distance < '%s'", distTop)
+	}
+
+	if distBot != "" {
+		queryCondition = fmt.Sprintf(queryCondition+" AND distance > '%s'", distBot)
+	}
+
+	if ageTop != "" {
+		queryCondition = fmt.Sprintf(queryCondition+" AND age < '%s'", ageTop)
+	}
+
+	if ageBot != "" {
+		queryCondition = fmt.Sprintf(queryCondition+" AND age > '%s'", ageBot)
+	}
+
+	if magTop != "" {
+		queryCondition = fmt.Sprintf(queryCondition+" AND magnitude < '%s'", magTop)
+	}
+
+	if magBot != "" {
+		queryCondition = fmt.Sprintf(queryCondition+" AND magnitude > '%s'", magBot)
+	}
 
 	if len(substring) != 0 {
 		// if query substring exists
-		err := r.db.Order("star_id").Where("name ILIKE ?", "%"+substring+"%").Find(&star, "is_active = ?", true).Error
+		err := r.db.Order("star_id").Where("name ILIKE ?", "%"+substring+"%").Find(&star, queryCondition).Error
 		if err != nil {
 			log.Println(err)
 			return []models.Star{}, err
@@ -22,7 +48,7 @@ func (r *Repository) GetFilteredStars(substring string) ([]models.Star, error) {
 
 	} else {
 		// if query substring is empty
-		err := r.db.Order("star_id").Find(&star, "is_active = ?", true).Error
+		err := r.db.Order("star_id").Find(&star, queryCondition).Error
 		if err != nil {
 			log.Println(err)
 			return []models.Star{}, err

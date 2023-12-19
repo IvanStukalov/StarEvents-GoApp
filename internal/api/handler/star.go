@@ -13,7 +13,14 @@ import (
 
 // get stars with filter
 func (h *Handler) GetStarList(c *gin.Context) {
-	starList, err := h.repo.GetFilteredStars(c.Query("name"))
+	starList, err := h.repo.GetFilteredStars(c.Query("name"), 
+																					 c.Query("dist_top"), 
+																					 c.Query("dist_bot"), 
+																					 c.Query("age_top"), 
+																					 c.Query("age_bot"), 
+																					 c.Query("mag_top"), 
+																					 c.Query("mag_bot"))
+																					 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, nil)
 		log.Println(err)
