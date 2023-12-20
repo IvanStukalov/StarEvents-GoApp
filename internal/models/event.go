@@ -10,7 +10,9 @@ type Event struct {
 	FormationDate  time.Time `json:"formation_date"`
 	CompletionDate time.Time `json:"completion_date"`
 	ModeratorID    int       `json:"moderator_id"`
+	Moderator      string    `json:"moderator"`
 	CreatorID      int       `json:"creator_id"`
+	Creator        string    `json:"creator"`
 }
 
 type EventMsg struct {
