@@ -55,14 +55,14 @@ func (h *Handler) GetEvent(c *gin.Context) {
 		return
 	}
 
-	eventDetails, err := h.repo.GetEventByID(id)
+	event, starList, err := h.repo.GetEventByID(id)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, err.Error())
 		log.Println(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, eventDetails)
+	c.JSON(http.StatusOK, gin.H{"event": event, "star_list": starList})
 }
 
 func (h *Handler) UpdateEvent(c *gin.Context) {

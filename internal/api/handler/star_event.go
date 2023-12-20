@@ -16,10 +16,10 @@ func (h *Handler) RemoveStarFromEvent(c *gin.Context) {
 
 	creatorId := h.repo.GetCreatorId()
 
-	event, err := h.repo.RemoveStarFromEvent(creatorId, starId)
+	event, starList, err := h.repo.RemoveStarFromEvent(creatorId, starId)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, event)
+	c.JSON(http.StatusOK, gin.H{"event": event, "star_list": starList})
 }

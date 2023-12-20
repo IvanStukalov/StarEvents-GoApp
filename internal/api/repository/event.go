@@ -43,7 +43,7 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 }
 
 // get event by ID
-func (r *Repository) GetEventByID(eventId int) (models.EventDetails, error) {
+func (r *Repository) GetEventByID(eventId int) (models.Event, []models.Star, error) {
 	event := models.Event{}
 	r.db.Find(&event, "event_id = ?", strconv.Itoa(eventId))
 
@@ -59,12 +59,12 @@ func (r *Repository) GetEventByID(eventId int) (models.EventDetails, error) {
 		}
 	}
 
-	eventDetails := models.EventDetails{
-		Event:     event,
-		StarsList: stars,
-	}
+	// eventDetails := models.EventDetails{
+	// 	Event:     event,
+	// 	StarsList: stars,
+	// }
 
-	return eventDetails, nil
+	return event, stars, nil
 }
 
 func (r *Repository) UpdateEvent(eventId int, name string) error {

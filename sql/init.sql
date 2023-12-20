@@ -25,20 +25,12 @@ alter table
 create table "users" (
     user_id serial not null constraint user_pk primary key,
     name varchar(50),
-    password varchar(20)
+    password varchar(20),
+    is_moderator boolean
 );
 
 alter table
     "users" owner to postgres;
-
-create table moderators (
-    moderator_id serial not null constraint moderator_pk primary key,
-    name varchar(50),
-    password varchar(20)
-);
-
-alter table
-    moderators owner to postgres;
 
 create table events (
     event_id serial not null constraint event_pk primary key,
@@ -47,7 +39,7 @@ create table events (
     creation_date timestamp,
     formation_date timestamp,
     completion_date timestamp,
-    moderator_id integer constraint event_moderator_moderator_id_fk references moderators,
+    moderator_id integer constraint event_moderator_user_id_fk references "users",
     creator_id integer constraint event_creator_user_id_fk references "users"
 );
 

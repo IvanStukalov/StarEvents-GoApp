@@ -18,11 +18,6 @@ type EventMsg struct {
 	CreatorID int `json:"creator_id" gorm:"column:creator_id;not null"`
 }
 
-type EventDetails struct {
-	Event     Event  `json:"event"`
-	StarsList []Star `json:"stars_list"`
-}
-
 type StarEvents struct {
 	StarID  int `json:"star_id"`
 	EventID int `json:"event_id"`

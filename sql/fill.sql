@@ -1,10 +1,9 @@
-INSERT INTO users(name, password)
-  VALUES ('Алексей', 'alexey123'),
-('Сергей', 'sergey123');
+INSERT INTO users(name, password, is_moderator)
+  VALUES ('Алексей', 'alexey123', true),
+('Сергей', 'sergey123', false),
+('Александр', 'alex123', true),
+('Владимир', 'vd123', false);
 
-INSERT INTO moderators(name, password)
-  VALUES ('Александр', 'alex123'),
-('Владимир', 'vd123');
 
 INSERT INTO stars(name, description, distance, age, magnitude, image, is_active)
   VALUES ('Солнце', 'Наша родная звезда, которая светит нам и греет нас', 0, 5.6, -26.7, 'sun.png', TRUE),

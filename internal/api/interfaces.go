@@ -16,7 +16,7 @@ type Repo interface {
 	RemoveFromEvent(starEvent models.StarEvents) error
 
 	GetEventList(status string, startFormation time.Time, endFormation time.Time) ([]models.Event, error)
-	GetEventByID(eventId int) (models.EventDetails, error)
+	GetEventByID(eventId int) (models.Event, []models.Star, error)
 	UpdateEvent(eventId int, name string) error
 	PutIntoEvent(eventMsg models.EventMsg) error
 	DeleteEvent(creatorId int) error
@@ -24,7 +24,7 @@ type Repo interface {
 	ChangeEventStatus(eventId int, status string) error
 	GetDraft(creatorId int) (int, error)
 
-	RemoveStarFromEvent(creatorId int, starId int) (models.EventDetails, error)
+	RemoveStarFromEvent(creatorId int, starId int) (models.Event, []models.Star, error)
 
 	GetCreatorId() int
 	GetModeratorId() int

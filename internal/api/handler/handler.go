@@ -32,7 +32,7 @@ func (h *Handler) StartServer() {
 		starRouter.GET("/", h.GetStarList)
 		starRouter.GET("/:id", h.GetStar)
 		starRouter.POST("/", h.CreateStar)
-		starRouter.PUT("/:id/delete", h.DeleteStar)
+		starRouter.DELETE("/:id", h.DeleteStar)
 		starRouter.PUT("/:id/update", h.UpdateStar)
 	}
 
@@ -41,8 +41,8 @@ func (h *Handler) StartServer() {
 		eventRouter.GET("/", h.GetEventList)
 		eventRouter.GET("/:id", h.GetEvent)
 		eventRouter.PUT("/:id", h.UpdateEvent)
-		eventRouter.PUT("/star", h.PutIntoEvent)
-		eventRouter.PUT("/delete", h.DeleteEvent)
+		eventRouter.POST("/star", h.PutIntoEvent)
+		eventRouter.DELETE("/", h.DeleteEvent)
 		eventRouter.PUT("/form", h.FormEvent)
 		eventRouter.PUT("/:id/status", h.ChangeEventStatus)
 	}
