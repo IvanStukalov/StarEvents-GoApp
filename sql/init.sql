@@ -20,17 +20,26 @@ alter table
     stars
     owner to postgres;
 
-create table "users"
-(
-    user_id      serial not null
-        constraint user_pk primary key,
-    name         varchar(50),
-    is_moderator boolean
+
+create table "users" (
+    user_id serial not null constraint user_pk primary key,
+    name varchar(50),
+    password varchar(20),
 );
 
 alter table
-    "users"
-    owner to postgres;
+    "users" owner to postgres;
+
+
+create table moderators (
+    moderator_id serial not null constraint moderator_pk primary key,
+    name varchar(50),
+    password varchar(20),
+);
+
+alter table
+    moderators owner to postgres;
+
 
 create table events
 (
@@ -42,7 +51,7 @@ create table events
     formation_date  timestamp,
     completion_date timestamp,
     moderator_id    integer
-        constraint event_moderator_user_id_fk references "users",
+        constraint event_moderator_moderator_id_fk references moderators,
     creator_id      integer
         constraint event_creator_user_id_fk references "users"
 );
@@ -50,6 +59,7 @@ create table events
 alter table
     events
     owner to postgres;
+
 
 create table star_events
 (
