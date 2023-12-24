@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/minio"
@@ -52,8 +54,7 @@ func (h *Handler) StartServer() {
 		starEventRouter.DELETE("/:star-id", h.RemoveStarFromEvent)
 	}
 
-	// listen and serve on 127.0.0.1:8080
-	err := r.Run()
+	err := r.Run(fmt.Sprintf("%s:8080", os.Getenv("HOST")))
 	if err != nil {
 		log.Fatalln(err)
 	}
