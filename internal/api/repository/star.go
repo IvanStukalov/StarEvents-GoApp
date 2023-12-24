@@ -15,27 +15,27 @@ func (r *Repository) GetFilteredStars(substring string, distTop string, distBot 
 	var queryCondition = "is_active = true"
 
 	if distTop != "" {
-		queryCondition = fmt.Sprintf(queryCondition+" AND distance < '%s'", distTop)
+		queryCondition = fmt.Sprintf(queryCondition+" AND distance <= '%s'", distTop)
 	}
 
 	if distBot != "" {
-		queryCondition = fmt.Sprintf(queryCondition+" AND distance > '%s'", distBot)
+		queryCondition = fmt.Sprintf(queryCondition+" AND distance >= '%s'", distBot)
 	}
 
 	if ageTop != "" {
-		queryCondition = fmt.Sprintf(queryCondition+" AND age < '%s'", ageTop)
+		queryCondition = fmt.Sprintf(queryCondition+" AND age <= '%s'", ageTop)
 	}
 
 	if ageBot != "" {
-		queryCondition = fmt.Sprintf(queryCondition+" AND age > '%s'", ageBot)
+		queryCondition = fmt.Sprintf(queryCondition+" AND age >= '%s'", ageBot)
 	}
 
 	if magTop != "" {
-		queryCondition = fmt.Sprintf(queryCondition+" AND magnitude < '%s'", magTop)
+		queryCondition = fmt.Sprintf(queryCondition+" AND magnitude <= '%s'", magTop)
 	}
 
 	if magBot != "" {
-		queryCondition = fmt.Sprintf(queryCondition+" AND magnitude > '%s'", magBot)
+		queryCondition = fmt.Sprintf(queryCondition+" AND magnitude >= '%s'", magBot)
 	}
 
 	if len(substring) != 0 {
