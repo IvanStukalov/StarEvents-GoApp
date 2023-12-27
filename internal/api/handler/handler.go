@@ -47,6 +47,10 @@ func (h *Handler) StartServer() {
 		eventRouter.DELETE("/", h.DeleteEvent)
 		eventRouter.PUT("/form", h.FormEvent)
 		eventRouter.PUT("/:id/status", h.ChangeEventStatus)
+
+		// async
+		eventRouter.PUT("/start-scanning", h.StartScanning)
+		eventRouter.PUT("/finish-scanning", h.FinishScanning)
 	}
 
 	starEventRouter := api.Group("star-event")

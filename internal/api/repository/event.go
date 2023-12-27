@@ -164,3 +164,14 @@ func (r *Repository) GetDraft(creatorId int) (int, error) {
 
 	return event.ID, nil
 }
+
+func (r *Repository) SaveScannedPercent(eventAsync models.EventAsync) error {
+	var event models.Event
+	err := r.db.First(&event, "event_id = ?", eventAsync.ID)
+	if err.Error != nil {
+		return err.Error
+	}
+	event.ScannedPercent = eventAsync.ScannedPercent
+	res := r.db.Save(&event)
+	return res.Error
+}

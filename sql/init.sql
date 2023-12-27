@@ -40,7 +40,8 @@ create table events (
     formation_date timestamp,
     completion_date timestamp,
     moderator_id integer constraint event_moderator_user_id_fk references "users",
-    creator_id integer constraint event_creator_user_id_fk references "users"
+    creator_id integer constraint event_creator_user_id_fk references "users",
+    scanned_percent integer
 );
 
 alter table

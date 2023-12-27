@@ -23,6 +23,7 @@ type Repo interface {
 	FormEvent(creatorId int) error
 	ChangeEventStatus(eventId int, status string) error
 	GetDraft(creatorId int) (int, error)
+	SaveScannedPercent(eventAsync models.EventAsync) error
 
 	RemoveStarFromEvent(creatorId int, starId int) (models.Event, []models.Star, error)
 

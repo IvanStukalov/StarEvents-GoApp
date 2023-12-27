@@ -13,6 +13,13 @@ type Event struct {
 	Moderator      string    `json:"moderator" gorm:"-"`
 	CreatorID      int       `json:"creator_id"`
 	Creator        string    `json:"creator" gorm:"-"`
+	ScannedPercent int       `json:"scanned_percent"`
+}
+
+type EventAsync struct {
+	ID             int    `json:"event_id"`
+	ScannedPercent int    `json:"scanned_percent"`
+	Token          string `json:"Token"`
 }
 
 type EventMsg struct {
