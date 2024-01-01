@@ -11,6 +11,9 @@ import (
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/auth"
+	redis "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/redis"
 )
 
 func main() {
@@ -42,6 +45,18 @@ func main() {
 	repo, err := repository.NewRepository(dsn)
 	if err != nil {
 		log.Error(err)
+	}
+
+	redisConfig := redis.InitRedisConfig(vp, logger)
+
+	redisClient, err := redis.NewRedisClient(context.Background(), redisConfig, logger)
+	if err != nil {
+		logger.Fatalln(err)
+	}
+
+	tokenManager, err := auth.NewManager(os.Getenv("TOKEN_SECRET"))
+	if err != nil {
+		logger.Fatalln(err)
 	}
 
 	h := handler.NewHandler(repo, minioClient)

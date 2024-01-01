@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"time"
 
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
@@ -28,4 +29,8 @@ type Repo interface {
 
 	GetCreatorId() int
 	GetModeratorId() int
+
+	SignUp(ctx context.Context, newUser models.User) error
+	GetByCredentials(ctx context.Context, user models.User) (models.User, error)
+	GetUserInfo(ctx context.Context, user models.User) (models.User, error)
 }

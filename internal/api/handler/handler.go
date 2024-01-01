@@ -6,18 +6,33 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/minio"
 	"github.com/gin-gonic/gin"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/repository"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/auth"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/hash"
+	minio "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/minio"
+	redis "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/redis"
 )
 
 type Handler struct {
-	repo  api.Repo
 	minio minio.Client
+	redis redis.Client
+	repo  api.Repo
+
+	hasher       hash.PasswordHasher
+	tokenManager auth.TokenManager
 }
 
-func NewHandler(repo api.Repo, minio minio.Client) *Handler {
-	return &Handler{repo: repo, minio: minio}
+func NewHandler(repo api.Repo, minio minio.Client, tokenManager, redisClient) *Handler {
+	return &Handler{
+		repo:         repo,
+		minio:        minioClient,
+		redis:        redisClient,
+		hasher:       hash.NewSHA256Hasher(os.Getenv("SALT")),
+		tokenManager: tokenManager,
+	}
 }
 
 func (h *Handler) StartServer() {
