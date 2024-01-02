@@ -5,25 +5,24 @@ import (
 	"os"
 	"time"
 
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/handler"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/repository"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg"
-	minio "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/minio"
+	"StarEvent-GoApp/internal/api/handler"
+	"StarEvent-GoApp/internal/api/repository"
+	"StarEvent-GoApp/internal/pkg"
+	minio "StarEvent-GoApp/internal/pkg/minio"
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-  "github.com/IvanStukalov/Term5-WebAppDevelopment/docs"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/auth"
-	redis "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/redis"
+	"StarEvent-GoApp/internal/pkg/auth"
+	redis "StarEvent-GoApp/internal/pkg/redis"
 )
 
-// @title ThreatMonitoringApp
-// @version 1.0
-// @description App for serving threats monitoring requests
+//	@title			Star Events App
+//	@version		1.0
+//	@description	App for serving star events
 
-// @host localhost:8080
-// @schemes http
-// @BasePath /
+//	@host		localhost:8080
+//	@schemes	http
+//	@BasePath	/
 func main() {
 	dsn, err := pkg.GetConnectionString()
 	if err != nil {

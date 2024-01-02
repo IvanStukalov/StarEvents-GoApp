@@ -3,7 +3,7 @@ package handler
 import (
 	"errors"
 	"fmt"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"StarEvent-GoApp/internal/models"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -12,16 +12,16 @@ import (
 )
 
 // SignUp godoc
-// @Summary Регистрация нового пользователя
-// @Description Регистрирует нового пользователя с заданными параметрами
-// @Tags Пользователи
-// @Accept json
-// @Produce json
-// @Param user body models.UserSignUp true "Новый пользователь"
-// @Success 201 {string} string "Пользователь успешно зарегистрирован"
-// @Failure 400 {string} string "Неверный формат данных о новом пользователе"
-// @Failure 500 {string} string "Нельзя создать пользователя с таким логином"
-// @Router /users [post]
+//	@Summary		Регистрация нового пользователя
+//	@Description	Регистрирует нового пользователя с заданными параметрами
+//	@Tags			Пользователи
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.UserSignUp	true	"Новый пользователь"
+//	@Success		201		{string}	string				"Пользователь успешно зарегистрирован"
+//	@Failure		400		{string}	string				"Неверный формат данных о новом пользователе"
+//	@Failure		500		{string}	string				"Нельзя создать пользователя с таким логином"
+//	@Router			/api/signUp [post]
 func (h *Handler) SignUp(c *gin.Context) {
 	var newClient models.UserSignUp
 	var err error
@@ -49,15 +49,15 @@ func (h *Handler) SignUp(c *gin.Context) {
 }
 
 // CheckAuth godoc
-// @Summary Проверка аутентификации
-// @Description Проверяет аутентификацию текущего пользователя и возвращает его информацию
-// @Tags Аутентификация
-// @Accept json
-// @Produce json
-// @Success 200 {object} models.User "Информация о пользователе"
-// @Failure 500 {string} string "Ошибка сервера"
-// @Security ApiKeyAuth
-// @Router /auth [get]
+//	@Summary		Проверка аутентификации
+//	@Description	Проверяет аутентификацию текущего пользователя и возвращает его информацию
+//	@Tags			Аутентификация
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.User	"Информация о пользователе"
+//	@Failure		500	{string}	string		"Ошибка сервера"
+//	@Security		ApiKeyAuth
+//	@Router			/api/check-auth [get]
 func (h *Handler) CheckAuth(c *gin.Context) {
 	var userInfo = models.User{UserId: c.GetInt(userCtx)}
 
@@ -71,18 +71,18 @@ func (h *Handler) CheckAuth(c *gin.Context) {
 }
 
 // SignIn godoc
-// @Summary Авторизация пользователя
-// @Description Авторизует пользователя и возвращает JWT токен
-// @Tags Аутентификация
-// @Accept json
-// @Produce json
-// @Param user body models.UserLogin true "Данные для входа"
-// @Success 200 {string} string "Пользователь успешно авторизован"
-// @Failure 400 {string} string "Неверный формат данных"
-// @Failure 401 {string} string "Неверные учетные данные"
-// @Failure 500 {string} string "Ошибка сервера"
-// @Security ApiKeyAuth
-// @Router /signin [post]
+//	@Summary		Авторизация пользователя
+//	@Description	Авторизует пользователя и возвращает JWT токен
+//	@Tags			Аутентификация
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.UserLogin	true	"Данные для входа"
+//	@Success		200		{string}	string				"Пользователь успешно авторизован"
+//	@Failure		400		{string}	string				"Неверный формат данных"
+//	@Failure		401		{string}	string				"Неверные учетные данные"
+//	@Failure		500		{string}	string				"Ошибка сервера"
+//	@Security		ApiKeyAuth
+//	@Router			/api/signIn [post]
 func (h *Handler) SignIn(c *gin.Context) {
 	var clientInfo models.UserLogin
 	var err error
@@ -119,16 +119,16 @@ func (h *Handler) SignIn(c *gin.Context) {
 }
 
 // Logout godoc
-// @Summary Выход из системы
-// @Description Отменяет аутентификацию пользователя и удаляет JWT токен
-// @Tags Аутентификация
-// @Accept json
-// @Produce json
-// @Success 200 {string} string "Пользователь успешно вышел из системы"
-// @Failure 400 {string} string "Неверный формат данных"
-// @Failure 500 {string} string "Ошибка сервера"
-// @Security ApiKeyAuth
-// @Router /logout [post]
+//	@Summary		Выход из системы
+//	@Description	Отменяет аутентификацию пользователя и удаляет JWT токен
+//	@Tags			Аутентификация
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{string}	string	"Пользователь успешно вышел из системы"
+//	@Failure		400	{string}	string	"Неверный формат данных"
+//	@Failure		500	{string}	string	"Ошибка сервера"
+//	@Security		ApiKeyAuth
+//	@Router			/api/logout [post]
 func (h *Handler) Logout(c *gin.Context) {
 	jwtStr, err := c.Cookie("AccessToken")
 	if !strings.HasPrefix(jwtStr, jwtPrefix) || err != nil { // если нет префикса то нас дурят!

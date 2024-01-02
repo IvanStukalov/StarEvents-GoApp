@@ -24,9 +24,11 @@ alter table
 
 create table "users" (
     user_id serial not null constraint user_pk primary key,
+    login varchar(50),
     name varchar(50),
-    password varchar(20),
-    is_moderator boolean
+    password varchar(200),
+    is_moderator boolean,
+    registration_date timestamp
 );
 
 alter table

@@ -1,9 +1,8 @@
-INSERT INTO users(name, password, is_moderator)
-  VALUES ('Алексей', 'alexey123', true),
-('Сергей', 'sergey123', false),
-('Александр', 'alex123', true),
-('Владимир', 'vd123', false);
-
+INSERT INTO users(name, login, password, is_moderator, registration_date)
+  VALUES ('Алексей', 'Lexa', 'alexey123', true, NOW()),
+('Сергей', 'Sergey', 'sergey123', false, NOW()),
+('Александр', 'Alex228', 'alex123', true, NOW()),
+('Владимир', 'Vovan', 'vd123', false, NOW());
 
 INSERT INTO stars(name, description, distance, age, magnitude, image, is_active)
   VALUES ('Солнце', 'Наша родная звезда, которая светит нам и греет нас', 0, 5.6, -26.7, 'sun.png', TRUE),
@@ -19,4 +18,3 @@ INSERT INTO events(name, status, creation_date, formation_date, completion_date,
 INSERT INTO star_events(star_id, event_id)
   VALUES (1, 1),
 (3, 2);
-

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
 	"math/rand"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"StarEvent-GoApp/internal/models"
 	"time"
 )
 

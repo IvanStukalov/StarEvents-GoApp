@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"StarEvent-GoApp/internal/models"
 )
 
 // get list of events

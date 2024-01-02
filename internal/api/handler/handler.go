@@ -5,13 +5,15 @@ import (
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/auth"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/hash"
-	minio "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/minio"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/redis"
+	"github.com/swaggo/files"
+	_ "StarEvent-GoApp/docs"
+	"github.com/swaggo/gin-swagger"
+	"StarEvent-GoApp/internal/api"
+	"StarEvent-GoApp/internal/models"
+	"StarEvent-GoApp/internal/pkg/auth"
+	"StarEvent-GoApp/internal/pkg/hash"
+	minio "StarEvent-GoApp/internal/pkg/minio"
+	"StarEvent-GoApp/internal/pkg/redis"
 	"github.com/gin-gonic/gin"
 )
 
@@ -55,9 +57,10 @@ func (h *Handler) StartServer() {
 
 	r := gin.Default()
 	r.Use(CORSMiddleware())
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 
 	api := r.Group("api")
-
 	api.GET("/ping", h.Ping)
 
 	api.POST("/signIn", h.SignIn)
@@ -96,7 +99,13 @@ func (h *Handler) StartServer() {
 	}
 }
 
-// ping
+// Ping godoc
+//	@Summary		Show hello text
+//	@Description	very very friendly response
+//	@Tags			Tests
+//	@Produce		json
+//	@Success		200	{object}	map[string]string
+//	@Router			/api/ping [get]
 func (h *Handler) Ping(c *gin.Context) {
 	c.JSON(
 		http.StatusOK,

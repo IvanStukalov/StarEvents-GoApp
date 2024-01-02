@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"StarEvent-GoApp/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

@@ -8,7 +8,7 @@ import (
 type User struct {
 	UserId           int    `gorm:"primaryKey" json:"userId"`
 	Login            string `json:"login" binding:"required,max=64"`
-	IsAdmin          bool   `json:"isAdmin"`
+	IsAdmin          bool   `json:"isAdmin" gorm:"column:is_moderator"`
 	Name             string `json:"name,omitempty"`
 	Password         string `json:"password,omitempty" binding:"required,min=8,max=64"`
 	RegistrationDate time.Time

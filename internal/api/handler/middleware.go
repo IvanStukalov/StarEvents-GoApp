@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"StarEvent-GoApp/internal/models"
 )
 
 const (

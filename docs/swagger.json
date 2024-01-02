@@ -1,0 +1,39 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "App for serving star events",
+        "title": "Star Events App",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+       "/api/ping": {
+        "get": {
+            "description": "very very friendly response",
+            "produces": [
+                "application/json"
+            ],
+            "tags": [
+                "Tests"
+            ],
+            "summary": "Show hello text",
+            "responses": {
+                "200": {
+                    "description": "OK",
+                    "schema": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+}

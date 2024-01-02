@@ -7,16 +7,16 @@ import (
 )
 
 // RemoveStarFromEvent godoc
-// @Summary Удалить звезду из события
-// @Description Удаляет звезду из события по ее ID
-// @Tags События
-// @Accept json
-// @Produce json
-// @Param star-id path int true "ID звезды"
-// @Success 200 {object} Event "Событие после удаления звезды"
-// @Failure 400 {string} string "Некорректный ID звезды"
-// @Failure 500 {string} string "Ошибка сервера"
-// @Router /events/stars/{star-id} [delete]
+//	@Summary		"Удалить звезду из события"
+//	@Description	"Удаляет звезду из события по ее ID"
+//	@Tags			"События"
+//	@Accept			json
+//	@Produce		json
+//	@Param			star-id	path		int				true	"ID звезды"
+//	@Success		200		{object}	models.Event	"Событие после удаления звезды"
+//	@Failure		400		{string}	string			"Некорректный ID звезды"
+//	@Failure		500		{string}	string			"Ошибка сервера"
+//	@Router			/api/star-event/{star-id} [delete]
 func (h *Handler) RemoveStarFromEvent(c *gin.Context) {
 	starIdStr := c.Param("star-id")
 	starId, err := strconv.Atoi(starIdStr)

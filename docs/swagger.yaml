@@ -1,0 +1,688 @@
+basePath: /
+definitions:
+  models.Event:
+    properties:
+      completion_date:
+        type: string
+      creation_date:
+        type: string
+      creator:
+        type: string
+      creator_id:
+        type: integer
+      event_id:
+        type: integer
+      formation_date:
+        type: string
+      moderator:
+        type: string
+      moderator_id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+    type: object
+  models.EventMsg:
+    properties:
+      creator_id:
+        type: integer
+      star_id:
+        type: integer
+    type: object
+  models.Star:
+    properties:
+      age:
+        type: number
+      description:
+        type: string
+      distance:
+        type: number
+      image:
+        type: string
+      is_active:
+        type: boolean
+      magnitude:
+        type: number
+      name:
+        type: string
+      star_id:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      isAdmin:
+        type: boolean
+      login:
+        maxLength: 64
+        type: string
+      name:
+        type: string
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+      registrationDate:
+        type: string
+      userId:
+        type: integer
+    required:
+    - login
+    - password
+    type: object
+  models.UserLogin:
+    properties:
+      login:
+        maxLength: 64
+        type: string
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  models.UserSignUp:
+    properties:
+      login:
+        maxLength: 64
+        type: string
+      password:
+        maxLength: 64
+        minLength: 8
+        type: string
+    required:
+    - login
+    - password
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: App for serving star events
+  title: Star Events App
+  version: "1.0"
+paths:
+  /api/check-auth:
+    get:
+      consumes:
+      - application/json
+      description: Проверяет аутентификацию текущего пользователя и возвращает его
+        информацию
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о пользователе
+          schema:
+            $ref: '#/definitions/models.User'
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Проверка аутентификации
+      tags:
+      - Аутентификация
+  /api/event:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет существующее событие
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Событие успешно удалено
+          schema:
+            type: string
+        "400":
+          description: Ошибка удаления события
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Удалить событие
+      tags:
+      - События
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список событий, отфильтрованных по заданным параметрам
+      parameters:
+      - description: Статус события
+        in: query
+        name: status
+        type: string
+      - description: Дата начала формирования события
+        in: query
+        name: start_formation
+        type: string
+      - description: Дата окончания формирования события
+        in: query
+        name: end_formation
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список событий
+          schema:
+            items:
+              $ref: '#/definitions/models.Event'
+            type: array
+        "400":
+          description: Некорректный формат даты
+          schema:
+            type: string
+        "404":
+          description: События не найдены
+          schema:
+            type: string
+      summary: Получить список событий
+      tags:
+      - События
+  /api/event/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о событии по его ID
+      parameters:
+      - description: ID события
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о событии
+          schema:
+            $ref: '#/definitions/models.Event'
+        "400":
+          description: Некорректный ID события
+          schema:
+            type: string
+        "404":
+          description: Событие не найдено
+          schema:
+            type: string
+      summary: Получить событие по ID
+      tags:
+      - События
+    put:
+      consumes:
+      - application/json
+      description: Обновляет существующее событие по его ID
+      parameters:
+      - description: ID события
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новое название события
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Событие успешно обновлено
+          schema:
+            type: string
+        "400":
+          description: Некорректный ID события или название
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Обновить событие
+      tags:
+      - События
+  /api/event/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Изменяет статус существующего события
+      parameters:
+      - description: Новый статус события
+        in: query
+        name: status
+        required: true
+        type: string
+      - description: ID события
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Статус успешно изменен
+          schema:
+            type: string
+        "400":
+          description: Некорректный статус или ID события
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Изменить статус события
+      tags:
+      - События
+  /api/event/form:
+    put:
+      consumes:
+      - application/json
+      description: Создает новое событие
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Событие успешно создано
+          schema:
+            type: string
+        "400":
+          description: Ошибка создания события
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Создать событие
+      tags:
+      - События
+  /api/logout:
+    post:
+      consumes:
+      - application/json
+      description: Отменяет аутентификацию пользователя и удаляет JWT токен
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь успешно вышел из системы
+          schema:
+            type: string
+        "400":
+          description: Неверный формат данных
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Выход из системы
+      tags:
+      - Аутентификация
+  /api/ping:
+    get:
+      description: very very friendly response
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Show hello text
+      tags:
+      - Tests
+  /api/signIn:
+    post:
+      consumes:
+      - application/json
+      description: Авторизует пользователя и возвращает JWT токен
+      parameters:
+      - description: Данные для входа
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Пользователь успешно авторизован
+          schema:
+            type: string
+        "400":
+          description: Неверный формат данных
+          schema:
+            type: string
+        "401":
+          description: Неверные учетные данные
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Авторизация пользователя
+      tags:
+      - Аутентификация
+  /api/signUp:
+    post:
+      consumes:
+      - application/json
+      description: Регистрирует нового пользователя с заданными параметрами
+      parameters:
+      - description: Новый пользователь
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserSignUp'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Пользователь успешно зарегистрирован
+          schema:
+            type: string
+        "400":
+          description: Неверный формат данных о новом пользователе
+          schema:
+            type: string
+        "500":
+          description: Нельзя создать пользователя с таким логином
+          schema:
+            type: string
+      summary: Регистрация нового пользователя
+      tags:
+      - Пользователи
+  /api/star:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список звезд, отфильтрованных по заданным параметрам
+      parameters:
+      - description: Имя
+        in: query
+        name: name
+        type: string
+      - description: Расстояние до верхней границы
+        in: query
+        name: dist_top
+        type: number
+      - description: Расстояние до нижней границы
+        in: query
+        name: dist_bot
+        type: number
+      - description: Возраст до верхней границы
+        in: query
+        name: age_top
+        type: integer
+      - description: Возраст до нижней границы
+        in: query
+        name: age_bot
+        type: integer
+      - description: Магнитуда до верхней границы
+        in: query
+        name: mag_top
+        type: number
+      - description: Магнитуда до нижней границы
+        in: query
+        name: mag_bot
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Ошибка при получении списка звезд или черновика
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Получить список звезд
+      tags:
+      - Звезды
+    post:
+      consumes:
+      - multipart/form-data
+      description: Создает новую звезду с заданными параметрами
+      parameters:
+      - description: Название звезды
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Описание звезды
+        in: formData
+        name: description
+        type: string
+      - description: Расстояние до звезды
+        in: formData
+        name: distance
+        type: number
+      - description: Возраст звезды
+        in: formData
+        name: age
+        type: number
+      - description: Магнитуда звезды
+        in: formData
+        name: magnitude
+        type: number
+      - description: Изображение звезды
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное создание звезды
+          schema:
+            type: string
+        "400":
+          description: Некорректный ввод данных
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Создать звезду
+      tags:
+      - Звезды
+  /api/star-event/{star-id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет звезду из события по ее ID
+      parameters:
+      - description: ID звезды
+        in: path
+        name: star-id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Событие после удаления звезды
+          schema:
+            $ref: '#/definitions/models.Event'
+        "400":
+          description: Некорректный ID звезды
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Удалить звезду из события
+      tags:
+      - События
+  /api/star/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет существующую звезду по ее ID
+      parameters:
+      - description: ID звезды
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное удаление звезды
+          schema:
+            type: string
+        "400":
+          description: Некорректный ID звезды
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Удалить звезду
+      tags:
+      - Звезды
+    get:
+      consumes:
+      - application/json
+      description: Возвращает информацию о звезде по ее ID
+      parameters:
+      - description: ID звезды
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешный ответ
+          schema:
+            $ref: '#/definitions/models.Star'
+        "400":
+          description: Некорректный ID звезды
+          schema:
+            type: string
+        "404":
+          description: Звезда не найдена
+          schema:
+            type: string
+      summary: Получить звезду по ID
+      tags:
+      - Звезды
+  /api/star/{id}/update:
+    put:
+      consumes:
+      - multipart/form-data
+      description: Обновляет существующую звезду с заданными параметрами
+      parameters:
+      - description: ID звезды
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новое название звезды
+        in: formData
+        name: name
+        type: string
+      - description: Новое описание звезды
+        in: formData
+        name: description
+        type: string
+      - description: Новое расстояние до звезды
+        in: formData
+        name: distance
+        type: number
+      - description: Новый возраст звезды
+        in: formData
+        name: age
+        type: number
+      - description: Новая магнитуда звезды
+        in: formData
+        name: magnitude
+        type: number
+      - description: Новое изображение звезды
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешное обновление звезды
+          schema:
+            type: string
+        "400":
+          description: Некорректный ввод данных
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Обновить звезду
+      tags:
+      - Звезды
+  /api/star/event:
+    post:
+      consumes:
+      - application/json
+      description: Добавляет сообщение в событие по его ID
+      parameters:
+      - description: ID события
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Сообщение для добавления в событие
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/models.EventMsg'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сообщение успешно добавлено в событие
+          schema:
+            type: string
+        "400":
+          description: Некорректный ID события или сообщение
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Добавить сообщение в событие
+      tags:
+      - События
+schemes:
+- http
+swagger: "2.0"

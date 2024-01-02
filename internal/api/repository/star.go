@@ -6,7 +6,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"StarEvent-GoApp/internal/models"
 )
 
 // get stars with filter
@@ -119,7 +119,9 @@ func (r *Repository) CreateStar(star models.Star) error {
 }
 
 // update star
-func (r *Repository) UpdateStar(star models.Star) error {
+func (r *Repository) UpdateStar(star models.Star, isUpdA bool, isUpdD bool, isUpdM bool) error {
+	fmt.Println(star)
+
 	var lastStar models.Star
 
 	err := r.db.First(&lastStar, star.ID).Error
@@ -139,15 +141,15 @@ func (r *Repository) UpdateStar(star models.Star) error {
 		lastStar.Image = star.Image
 	}
 
-	if star.Age >= 0 && star.Age <= models.UniversalAge {
+	if star.Age >= 0 && star.Age <= models.UniversalAge && isUpdA {
 		lastStar.Age = star.Age
 	}
 
-	if star.Distance >= 0 && star.Distance <= models.VisibleUniverseRadius {
+	if star.Distance >= 0 && star.Distance <= models.VisibleUniverseRadius && isUpdD {
 		lastStar.Distance = star.Distance
 	}
 
-	if star.Magnitude >= models.MinMagnitude {
+	if star.Magnitude >= models.MinMagnitude && isUpdM {
 		lastStar.Magnitude = star.Magnitude
 	}
 

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"StarEvent-GoApp/internal/models"
 )
 
 func (r *Repository) SignUp(ctx context.Context, newUser models.User) error {

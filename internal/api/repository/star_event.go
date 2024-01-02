@@ -2,7 +2,7 @@ package repository
 
 import (
 	"errors"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+	"StarEvent-GoApp/internal/models"
 )
 
 func (r *Repository) RemoveStarFromEvent(creatorId int, starId int) (models.Event, []models.Star, error) {
