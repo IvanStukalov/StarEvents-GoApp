@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/handler"
@@ -11,11 +12,18 @@ import (
 	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-
+  "github.com/IvanStukalov/Term5-WebAppDevelopment/docs"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/auth"
 	redis "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/redis"
 )
 
+// @title ThreatMonitoringApp
+// @version 1.0
+// @description App for serving threats monitoring requests
+
+// @host localhost:8080
+// @schemes http
+// @BasePath /
 func main() {
 	dsn, err := pkg.GetConnectionString()
 	if err != nil {
@@ -59,7 +67,7 @@ func main() {
 		logger.Fatalln(err)
 	}
 
-	h := handler.NewHandler(repo, minioClient)
+	h := handler.NewHandler(repo, minioClient, tokenManager, redisClient)
 	h.StartServer()
 }
 

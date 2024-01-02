@@ -6,14 +6,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api"
-	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/api/repository"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/auth"
 	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/hash"
 	minio "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/minio"
-	redis "github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/redis"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/pkg/redis"
+	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
@@ -25,7 +24,7 @@ type Handler struct {
 	tokenManager auth.TokenManager
 }
 
-func NewHandler(repo api.Repo, minio minio.Client, tokenManager, redisClient) *Handler {
+func NewHandler(repo api.Repo, minioClient minio.Client, tokenManager auth.TokenManager, redisClient redis.Client) *Handler {
 	return &Handler{
 		repo:         repo,
 		minio:        minioClient,
@@ -35,38 +34,60 @@ func NewHandler(repo api.Repo, minio minio.Client, tokenManager, redisClient) *H
 	}
 }
 
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "localhost")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func (h *Handler) StartServer() {
 	log.Println("Server start up")
 
 	r := gin.Default()
+	r.Use(CORSMiddleware())
 
 	api := r.Group("api")
 
 	api.GET("/ping", h.Ping)
 
+	api.POST("/signIn", h.SignIn)
+	api.POST("/signUp", h.SignUp)
+	api.POST("/logout", h.Logout)
+	api.GET("/check-auth", h.WithAuthCheck([]models.Role{models.Client, models.Admin}), h.CheckAuth)
+
 	starRouter := api.Group("star")
 	{
 		starRouter.GET("/", h.GetStarList)
 		starRouter.GET("/:id", h.GetStar)
-		starRouter.POST("/", h.CreateStar)
-		starRouter.DELETE("/:id", h.DeleteStar)
-		starRouter.PUT("/:id/update", h.UpdateStar)
+		starRouter.POST("/", h.WithAuthCheck([]models.Role{models.Admin}), h.CreateStar)
+		starRouter.DELETE("/:id", h.WithAuthCheck([]models.Role{models.Admin}), h.DeleteStar)
+		starRouter.PUT("/:id/update", h.WithAuthCheck([]models.Role{models.Admin}), h.UpdateStar)
+		starRouter.POST("/event", h.WithAuthCheck([]models.Role{models.Client}), h.PutIntoEvent)
 	}
 
 	eventRouter := api.Group("event")
 	{
-		eventRouter.GET("/", h.GetEventList)
-		eventRouter.GET("/:id", h.GetEvent)
-		eventRouter.PUT("/:id", h.UpdateEvent)
-		eventRouter.POST("/star", h.PutIntoEvent)
-		eventRouter.DELETE("/", h.DeleteEvent)
-		eventRouter.PUT("/form", h.FormEvent)
-		eventRouter.PUT("/:id/status", h.ChangeEventStatus)
+		eventRouter.GET("/", h.WithAuthCheck([]models.Role{models.Admin, models.Client}), h.GetEventList)
+		eventRouter.GET("/:id", h.WithAuthCheck([]models.Role{models.Admin, models.Client}), h.GetEvent)
+		eventRouter.PUT("/:id", h.WithAuthCheck([]models.Role{models.Client}), h.UpdateEvent)
+		eventRouter.DELETE("/", h.WithAuthCheck([]models.Role{models.Client}), h.DeleteEvent)
+		eventRouter.PUT("/form", h.WithAuthCheck([]models.Role{models.Client}), h.FormEvent)
+		eventRouter.PUT("/:id/status", h.WithAuthCheck([]models.Role{models.Admin}), h.ChangeEventStatus)
 	}
 
 	starEventRouter := api.Group("star-event")
 	{
-		starEventRouter.DELETE("/:star-id", h.RemoveStarFromEvent)
+		starEventRouter.DELETE("/:star-id", h.WithAuthCheck([]models.Role{models.Client}), h.RemoveStarFromEvent)
 	}
 
 	err := r.Run(fmt.Sprintf("%s:8080", os.Getenv("HOST")))

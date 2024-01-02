@@ -39,11 +39,6 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 	log.Println(queryCondition)
 	r.db.Where("NOT status = ?", models.StatusDeleted).Order("event_id").Find(&events, queryCondition)
 
-	for i := range events {
-		events[i].Moderator = r.GetModerator()
-		events[i].Creator = r.GetCreator()
-	}
-
 	return events, nil
 }
 
@@ -51,8 +46,6 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 func (r *Repository) GetEventByID(eventId int) (models.Event, []models.Star, error) {
 	event := models.Event{}
 	r.db.Find(&event, "event_id = ?", strconv.Itoa(eventId))
-	event.Moderator = r.GetModerator()
-	event.Creator = r.GetCreator()
 
 	var starEvents []models.StarEvents
 	r.db.Find(&starEvents, "event_id = ?", strconv.Itoa(eventId))
@@ -89,7 +82,7 @@ func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) error {
 		newEvent := models.Event{
 			CreatorID:    eventMsg.CreatorID,
 			Status:       models.StatusCreated,
-			ModeratorID:  r.GetModeratorId(),
+			// ModeratorID:  r.GetModeratorId(),
 			CreationDate: time.Now(),
 		}
 		res := r.db.Create(&newEvent)

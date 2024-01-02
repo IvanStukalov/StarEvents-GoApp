@@ -1,17 +1,20 @@
 package repository
 
-func (r *Repository) GetCreatorId() int {
-	return 2
+import (
+	"context"
+	"github.com/IvanStukalov/Term5-WebAppDevelopment/internal/models"
+)
+
+func (r *Repository) SignUp(ctx context.Context, newUser models.User) error {
+	return r.db.Create(&newUser).Error
 }
 
-func (r *Repository) GetModeratorId() int {
-	return 1
+func (r *Repository) GetByCredentials(ctx context.Context, user models.User) (models.User, error) {
+	err := r.db.First(&user, "login = ? AND password = ?", user.Login, user.Password).Error
+	return user, err
 }
 
-func (r *Repository) GetCreator() string {
-	return "Алексей"
-}
-
-func (r *Repository) GetModerator() string {
-	return "Владимир"
+func (r *Repository) GetUserInfo(ctx context.Context, user models.User) (models.User, error) {
+	err := r.db.First(&user, "user_id = ?", user.UserId).Error
+	return user, err
 }

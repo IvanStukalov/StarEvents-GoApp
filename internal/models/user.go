@@ -1,7 +1,30 @@
 package models
 
+import (
+	"errors"
+	"time"
+)
+
 type User struct {
-	UserID   int    `json:"user_id" gorm:"primaryKey;column:user_id;not null"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	UserId           int    `gorm:"primaryKey" json:"userId"`
+	Login            string `json:"login" binding:"required,max=64"`
+	IsAdmin          bool   `json:"isAdmin"`
+	Name             string `json:"name,omitempty"`
+	Password         string `json:"password,omitempty" binding:"required,min=8,max=64"`
+	RegistrationDate time.Time
 }
+
+type UserLogin struct {
+	Login    string `json:"login" binding:"required,max=64"`
+	Password string `json:"password" binding:"required,min=8,max=64"`
+}
+
+type UserSignUp struct {
+	Login    string `json:"login" binding:"required,max=64"`
+	Password string `json:"password" binding:"required,min=8,max=64"`
+}
+
+var (
+	ErrClientAlreadyExists = errors.New("клиент с таким логином уже существует")
+	ErrUserNotFound        = errors.New("клиента с таким логином не существует")
+)

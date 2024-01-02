@@ -6,6 +6,17 @@ import (
 	"strconv"
 )
 
+// RemoveStarFromEvent godoc
+// @Summary Удалить звезду из события
+// @Description Удаляет звезду из события по ее ID
+// @Tags События
+// @Accept json
+// @Produce json
+// @Param star-id path int true "ID звезды"
+// @Success 200 {object} Event "Событие после удаления звезды"
+// @Failure 400 {string} string "Некорректный ID звезды"
+// @Failure 500 {string} string "Ошибка сервера"
+// @Router /events/stars/{star-id} [delete]
 func (h *Handler) RemoveStarFromEvent(c *gin.Context) {
 	starIdStr := c.Param("star-id")
 	starId, err := strconv.Atoi(starIdStr)
@@ -14,7 +25,7 @@ func (h *Handler) RemoveStarFromEvent(c *gin.Context) {
 		return
 	}
 
-	creatorId := h.repo.GetCreatorId()
+	creatorId := c.GetInt(userCtx)
 
 	event, starList, err := h.repo.RemoveStarFromEvent(creatorId, starId)
 	if err != nil {

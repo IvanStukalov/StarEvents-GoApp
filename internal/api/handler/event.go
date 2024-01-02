@@ -10,7 +10,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// get list of events
+// GetEventList godoc
+// @Summary Получить список событий
+// @Description Возвращает список событий, отфильтрованных по заданным параметрам
+// @Tags События
+// @Accept json
+// @Produce json
+// @Param status query string false "Статус события"
+// @Param start_formation query string false "Дата начала формирования события"
+// @Param end_formation query string false "Дата окончания формирования события"
+// @Success 200 {array} Event "Список событий"
+// @Failure 400 {string} string "Некорректный формат даты"
+// @Failure 404 {string} string "События не найдены"
+// @Router /events [get]
 func (h *Handler) GetEventList(c *gin.Context) {
 	var startFormation time.Time
 	var endFormation time.Time
@@ -46,7 +58,17 @@ func (h *Handler) GetEventList(c *gin.Context) {
 	c.JSON(http.StatusOK, eventList)
 }
 
-// get one event by id
+// GetEvent godoc
+// @Summary Получить событие по ID
+// @Description Возвращает информацию о событии по его ID
+// @Tags События
+// @Accept json
+// @Produce json
+// @Param id path int true "ID события"
+// @Success 200 {object} Event "Информация о событии"
+// @Failure 400 {string} string "Некорректный ID события"
+// @Failure 404 {string} string "Событие не найдено"
+// @Router /events/{id} [get]
 func (h *Handler) GetEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -65,6 +87,18 @@ func (h *Handler) GetEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"event": event, "star_list": starList})
 }
 
+// UpdateEvent godoc
+// @Summary Обновить событие
+// @Description Обновляет существующее событие по его ID
+// @Tags События
+// @Accept json
+// @Produce json
+// @Param id path int true "ID события"
+// @Param name query string true "Новое название события"
+// @Success 200 {string} string "Событие успешно обновлено"
+// @Failure 400 {string} string "Некорректный ID события или название"
+// @Failure 500 {string} string "Ошибка сервера"
+// @Router /events/{id} [put]
 func (h *Handler) UpdateEvent(c *gin.Context) {
 	eventId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -77,32 +111,18 @@ func (h *Handler) UpdateEvent(c *gin.Context) {
 	err = h.repo.UpdateEvent(eventId, name)
 }
 
-// put star into event
-func (h *Handler) PutIntoEvent(c *gin.Context) {
-	var eventMsg models.EventMsg
-
-	err := c.BindJSON(&eventMsg)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	eventMsg.CreatorID = h.repo.GetCreatorId()
-	log.Println(eventMsg)
-
-	err = h.repo.PutIntoEvent(eventMsg)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-		log.Println(err)
-		return
-	}
-
-	c.JSON(http.StatusOK, nil)
-}
-
-// deleting event with status
+// DeleteEvent godoc
+// @Summary Удалить событие
+// @Description Удаляет существующее событие
+// @Tags События
+// @Accept json
+// @Produce json
+// @Success 200 {string} string "Событие успешно удалено"
+// @Failure 400 {string} string "Ошибка удаления события"
+// @Failure 500 {string} string "Ошибка сервера"
+// @Router /events [delete]
 func (h *Handler) DeleteEvent(c *gin.Context) {
-	creatorId := h.repo.GetCreatorId()
+	creatorId := c.GetInt(userCtx)
 	err := h.repo.DeleteEvent(creatorId)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
@@ -112,9 +132,18 @@ func (h *Handler) DeleteEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "событие успешно удалено"})
 }
 
-// for
+// FormEvent godoc
+// @Summary Создать событие
+// @Description Создает новое событие
+// @Tags События
+// @Accept json
+// @Produce json
+// @Success 200 {string} string "Событие успешно создано"
+// @Failure 400 {string} string "Ошибка создания события"
+// @Failure 500 {string} string "Ошибка сервера"
+// @Router /events [post]
 func (h *Handler) FormEvent(c *gin.Context) {
-	err := h.repo.FormEvent(h.repo.GetCreatorId())
+	err := h.repo.FormEvent(c.GetInt(userCtx))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
@@ -123,6 +152,18 @@ func (h *Handler) FormEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Статус изменен"})
 }
 
+// ChangeEventStatus godoc
+// @Summary Изменить статус события
+// @Description Изменяет статус существующего события
+// @Tags События
+// @Accept json
+// @Produce json
+// @Param status query string true "Новый статус события"
+// @Param id path int true "ID события"
+// @Success 200 {string} string "Статус успешно изменен"
+// @Failure 400 {string} string "Некорректный статус или ID события"
+// @Failure 500 {string} string "Ошибка сервера"
+// @Router /events/{id}/status [put]
 func (h *Handler) ChangeEventStatus(c *gin.Context) {
 	status := c.Query("status")
 	if status != models.StatusAccepted && status != models.StatusCanceled && status != models.StatusClosed {

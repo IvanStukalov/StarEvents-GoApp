@@ -11,7 +11,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// get stars with filter
+// GetStarList godoc
+// @Summary Получить список звезд
+// @Description Возвращает список звезд, отфильтрованных по заданным параметрам
+// @Tags Звезды
+// @Accept json
+// @Produce json
+// @Param name query string false "Имя"
+// @Param dist_top query float64 false "Расстояние до верхней границы"
+// @Param dist_bot query float64 false "Расстояние до нижней границы"
+// @Param age_top query int false "Возраст до верхней границы"
+// @Param age_bot query int false "Возраст до нижней границы"
+// @Param mag_top query float64 false "Магнитуда до верхней границы"
+// @Param mag_bot query float64 false "Магнитуда до нижней границы"
+// @Success 200 {object} map[string]interface{} "Успешный ответ"
+// @Failure 404 {object} map[string]interface{} "Ошибка при получении списка звезд или черновика"
+// @Router /stars [get]
 func (h *Handler) GetStarList(c *gin.Context) {
 	starList, err := h.repo.GetFilteredStars(c.Query("name"), 
 																					 c.Query("dist_top"), 
@@ -27,7 +42,7 @@ func (h *Handler) GetStarList(c *gin.Context) {
 		return
 	}
 
-	draftId, err := h.repo.GetDraft(h.repo.GetCreatorId())
+	draftId, err := h.repo.GetDraft(c.GetInt(userCtx))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, nil)
 		log.Println(err)
@@ -37,7 +52,17 @@ func (h *Handler) GetStarList(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"stars": starList, "draft_id": draftId})
 }
 
-// get one star by id
+// GetStar godoc
+// @Summary Получить звезду по ID
+// @Description Возвращает информацию о звезде по ее ID
+// @Tags Звезды
+// @Accept json
+// @Produce json
+// @Param id path int true "ID звезды"
+// @Success 200 {object} Star "Успешный ответ"
+// @Failure 400 {string} string "Некорректный ID звезды"
+// @Failure 404 {string} string "Звезда не найдена"
+// @Router /stars/{id} [get]
 func (h *Handler) GetStar(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -56,7 +81,22 @@ func (h *Handler) GetStar(c *gin.Context) {
 	c.JSON(http.StatusOK, star)
 }
 
-// create star
+// CreateStar godoc
+// @Summary Создать звезду
+// @Description Создает новую звезду с заданными параметрами
+// @Tags Звезды
+// @Accept mpfd
+// @Produce json
+// @Param name formData string true "Название звезды"
+// @Param description formData string false "Описание звезды"
+// @Param distance formData float32 false "Расстояние до звезды"
+// @Param age formData float32 false "Возраст звезды"
+// @Param magnitude formData float32 false "Магнитуда звезды"
+// @Param image formData file true "Изображение звезды"
+// @Success 200 {string} string "Успешное создание звезды"
+// @Failure 400 {string} string "Некорректный ввод данных"
+// @Failure 500 {string} string "Ошибка сервера"
+// @Router /stars [post]
 func (h *Handler) CreateStar(c *gin.Context) {
 	var star models.Star
 
@@ -119,7 +159,23 @@ func (h *Handler) CreateStar(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-// update star
+// UpdateStar godoc
+// @Summary Обновить звезду
+// @Description Обновляет существующую звезду с заданными параметрами
+// @Tags Звезды
+// @Accept mpfd
+// @Produce json
+// @Param id path int true "ID звезды"
+// @Param name formData string false "Новое название звезды"
+// @Param description formData string false "Новое описание звезды"
+// @Param distance formData float32 false "Новое расстояние до звезды"
+// @Param age formData float32 false "Новый возраст звезды"
+// @Param magnitude formData float32 false "Новая магнитуда звезды"
+// @Param image formData file false "Новое изображение звезды"
+// @Success 200 {string} string "Успешное обновление звезды"
+// @Failure 400 {string} string "Некорректный ввод данных"
+// @Failure 500 {string} string "Ошибка сервера"
+// @Router /stars/{id} [put]
 func (h *Handler) UpdateStar(c *gin.Context) {
 	var updatedStar models.Star
 
@@ -201,7 +257,17 @@ func (h *Handler) UpdateStar(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-// delete star
+// DeleteStar godoc
+// @Summary Удалить звезду
+// @Description Удаляет существующую звезду по ее ID
+// @Tags Звезды
+// @Accept json
+// @Produce json
+// @Param id path int true "ID звезды"
+// @Success 200 {string} string "Успешное удаление звезды"
+// @Failure 400 {string} string "Некорректный ID звезды"
+// @Failure 500 {string} string "Ошибка сервера"
+// @Router /stars/{id} [delete]
 func (h *Handler) DeleteStar(c *gin.Context) {
 	cardId := c.Param("id")
 	id, err := strconv.Atoi(cardId)
@@ -228,6 +294,40 @@ func (h *Handler) DeleteStar(c *gin.Context) {
 
 	// delete image from minio
 	err = h.minio.DeleteImage(c.Request.Context(), utils.ExtractObjectNameFromUrl(url))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+		log.Println(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, nil)
+}
+
+// PutIntoEvent godoc
+// @Summary Добавить сообщение в событие
+// @Description Добавляет сообщение в событие по его ID
+// @Tags События
+// @Accept json
+// @Produce json
+// @Param id path int true "ID события"
+// @Param message body models.EventMsg true "Сообщение для добавления в событие"
+// @Success 200 {string} string "Сообщение успешно добавлено в событие"
+// @Failure 400 {string} string "Некорректный ID события или сообщение"
+// @Failure 500 {string} string "Ошибка сервера"
+// @Router /star/{id}/messages [put]
+func (h *Handler) PutIntoEvent(c *gin.Context) {
+	var eventMsg models.EventMsg
+
+	err := c.BindJSON(&eventMsg)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	eventMsg.CreatorID = c.GetInt(userCtx)
+	log.Println(eventMsg)
+
+	err = h.repo.PutIntoEvent(eventMsg)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		log.Println(err)
