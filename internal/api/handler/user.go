@@ -51,7 +51,7 @@ func (h *Handler) SignUp(c *gin.Context) {
 // CheckAuth godoc
 //	@Summary		Проверка аутентификации
 //	@Description	Проверяет аутентификацию текущего пользователя и возвращает его информацию
-//	@Tags			Аутентификация
+//	@Tags			Пользователи
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	models.User	"Информация о пользователе"
@@ -73,7 +73,7 @@ func (h *Handler) CheckAuth(c *gin.Context) {
 // SignIn godoc
 //	@Summary		Авторизация пользователя
 //	@Description	Авторизует пользователя и возвращает JWT токен
-//	@Tags			Аутентификация
+//	@Tags			Пользователи
 //	@Accept			json
 //	@Produce		json
 //	@Param			user	body		models.UserLogin	true	"Данные для входа"
@@ -121,7 +121,7 @@ func (h *Handler) SignIn(c *gin.Context) {
 // Logout godoc
 //	@Summary		Выход из системы
 //	@Description	Отменяет аутентификацию пользователя и удаляет JWT токен
-//	@Tags			Аутентификация
+//	@Tags			Пользователи
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{string}	string	"Пользователь успешно вышел из системы"
@@ -131,8 +131,8 @@ func (h *Handler) SignIn(c *gin.Context) {
 //	@Router			/api/logout [post]
 func (h *Handler) Logout(c *gin.Context) {
 	jwtStr, err := c.Cookie("AccessToken")
-	if !strings.HasPrefix(jwtStr, jwtPrefix) || err != nil { // если нет префикса то нас дурят!
-		c.AbortWithStatus(http.StatusBadRequest) // отдаем что нет доступа
+	if !strings.HasPrefix(jwtStr, jwtPrefix) || err != nil {
+		c.AbortWithStatus(http.StatusBadRequest)
 		return
 	}
 

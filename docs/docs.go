@@ -30,7 +30,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Аутентификация"
+                    "Пользователи"
                 ],
                 "summary": "Проверка аутентификации",
                 "responses": {
@@ -71,13 +71,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Дата начала формирования события",
+                        "description": "Верхняя граница формирования события",
                         "name": "start_formation",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Дата окончания формирования события",
+                        "description": "Нижняя граница формирования события",
                         "name": "end_formation",
                         "in": "query"
                     }
@@ -334,7 +334,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Аутентификация"
+                    "Пользователи"
                 ],
                 "summary": "Выход из системы",
                 "responses": {
@@ -359,29 +359,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/ping": {
-            "get": {
-                "description": "very very friendly response",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Tests"
-                ],
-                "summary": "Show hello text",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/signIn": {
             "post": {
                 "security": [
@@ -397,7 +374,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Аутентификация"
+                    "Пользователи"
                 ],
                 "summary": "Авторизация пользователя",
                 "parameters": [
@@ -507,37 +484,37 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "Расстояние до верхней границы",
+                        "description": "Верхняя граница расстояния",
                         "name": "dist_top",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "description": "Расстояние до нижней границы",
+                        "description": "Нижняя граница расстояния",
                         "name": "dist_bot",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Возраст до верхней границы",
+                        "description": "Верхняя граница возраста",
                         "name": "age_top",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Возраст до нижней границы",
+                        "description": "Нижняя граница возраста",
                         "name": "age_bot",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "description": "Магнитуда до верхней границы",
+                        "description": "Верхняя граница звездной величины",
                         "name": "mag_top",
                         "in": "query"
                     },
                     {
                         "type": "number",
-                        "description": "Магнитуда до нижней границы",
+                        "description": "Нижняя граница звездной величины",
                         "name": "mag_bot",
                         "in": "query"
                     }
@@ -599,7 +576,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "Магнитуда звезды",
+                        "description": "Звездная величина",
                         "name": "magnitude",
                         "in": "formData"
                     },
@@ -635,7 +612,7 @@ const docTemplate = `{
         },
         "/api/star-event/{star-id}": {
             "delete": {
-                "description": "Удаляет звезду из события по ее ID",
+                "description": "\"Удаляет звезду из события по ее ID\"",
                 "consumes": [
                     "application/json"
                 ],
@@ -643,9 +620,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "События"
+                    "\"События\""
                 ],
-                "summary": "Удалить звезду из события",
+                "summary": "\"Удалить звезду из события\"",
                 "parameters": [
                     {
                         "type": "integer",
@@ -679,7 +656,7 @@ const docTemplate = `{
         },
         "/api/star/event": {
             "post": {
-                "description": "Добавляет сообщение в событие по его ID",
+                "description": "Добавляет звезду в событие по ее ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -687,9 +664,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "События"
+                    "Звезды"
                 ],
-                "summary": "Добавить сообщение в событие",
+                "summary": "Добавить звезду в событие",
                 "parameters": [
                     {
                         "type": "integer",
@@ -699,7 +676,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Сообщение для добавления в событие",
+                        "description": "Звезда для добавления в событие",
                         "name": "message",
                         "in": "body",
                         "required": true,
@@ -710,7 +687,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Сообщение успешно добавлено в событие",
+                        "description": "Звезда успешно добавлено в событие",
                         "schema": {
                             "type": "string"
                         }
@@ -863,7 +840,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
-                        "description": "Новая магнитуда звезды",
+                        "description": "Новая звездная величина",
                         "name": "magnitude",
                         "in": "formData"
                     },

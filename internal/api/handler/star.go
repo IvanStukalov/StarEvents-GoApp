@@ -12,30 +12,31 @@ import (
 )
 
 // GetStarList godoc
+//
 //	@Summary		Получить список звезд
 //	@Description	Возвращает список звезд, отфильтрованных по заданным параметрам
 //	@Tags			Звезды
 //	@Accept			json
 //	@Produce		json
 //	@Param			name		query		string					false	"Имя"
-//	@Param			dist_top	query		float64					false	"Расстояние до верхней границы"
-//	@Param			dist_bot	query		float64					false	"Расстояние до нижней границы"
-//	@Param			age_top		query		int						false	"Возраст до верхней границы"
-//	@Param			age_bot		query		int						false	"Возраст до нижней границы"
-//	@Param			mag_top		query		float64					false	"Магнитуда до верхней границы"
-//	@Param			mag_bot		query		float64					false	"Магнитуда до нижней границы"
+//	@Param			dist_top	query		float64					false	"Верхняя граница расстояния"
+//	@Param			dist_bot	query		float64					false	"Нижняя граница расстояния"
+//	@Param			age_top		query		int						false	"Верхняя граница возраста"
+//	@Param			age_bot		query		int						false	"Нижняя граница возраста"
+//	@Param			mag_top		query		float64					false	"Верхняя граница звездной величины"
+//	@Param			mag_bot		query		float64					false	"Нижняя граница звездной величины"
 //	@Success		200			{object}	map[string]interface{}	"Успешный ответ"
 //	@Failure		404			{object}	map[string]interface{}	"Ошибка при получении списка звезд или черновика"
 //	@Router			/api/star [get]
 func (h *Handler) GetStarList(c *gin.Context) {
-	starList, err := h.repo.GetFilteredStars(c.Query("name"), 
-																					 c.Query("dist_top"), 
-																					 c.Query("dist_bot"), 
-																					 c.Query("age_top"), 
-																					 c.Query("age_bot"), 
-																					 c.Query("mag_top"), 
-																					 c.Query("mag_bot"))
-																					 
+	starList, err := h.repo.GetFilteredStars(c.Query("name"),
+		c.Query("dist_top"),
+		c.Query("dist_bot"),
+		c.Query("age_top"),
+		c.Query("age_bot"),
+		c.Query("mag_top"),
+		c.Query("mag_bot"))
+
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, nil)
 		log.Println(err)
@@ -53,6 +54,7 @@ func (h *Handler) GetStarList(c *gin.Context) {
 }
 
 // GetStar godoc
+//
 //	@Summary		Получить звезду по ID
 //	@Description	Возвращает информацию о звезде по ее ID
 //	@Tags			Звезды
@@ -82,6 +84,7 @@ func (h *Handler) GetStar(c *gin.Context) {
 }
 
 // CreateStar godoc
+//
 //	@Summary		Создать звезду
 //	@Description	Создает новую звезду с заданными параметрами
 //	@Tags			Звезды
@@ -91,7 +94,7 @@ func (h *Handler) GetStar(c *gin.Context) {
 //	@Param			description	formData	string	false	"Описание звезды"
 //	@Param			distance	formData	float32	false	"Расстояние до звезды"
 //	@Param			age			formData	float32	false	"Возраст звезды"
-//	@Param			magnitude	formData	float32	false	"Магнитуда звезды"
+//	@Param			magnitude	formData	float32	false	"Звездная величина"
 //	@Param			image		formData	file	true	"Изображение звезды"
 //	@Success		200			{string}	string	"Успешное создание звезды"
 //	@Failure		400			{string}	string	"Некорректный ввод данных"
@@ -160,6 +163,7 @@ func (h *Handler) CreateStar(c *gin.Context) {
 }
 
 // UpdateStar godoc
+//
 //	@Summary		Обновить звезду
 //	@Description	Обновляет существующую звезду с заданными параметрами
 //	@Tags			Звезды
@@ -170,7 +174,7 @@ func (h *Handler) CreateStar(c *gin.Context) {
 //	@Param			description	formData	string	false	"Новое описание звезды"
 //	@Param			distance	formData	float32	false	"Новое расстояние до звезды"
 //	@Param			age			formData	float32	false	"Новый возраст звезды"
-//	@Param			magnitude	formData	float32	false	"Новая магнитуда звезды"
+//	@Param			magnitude	formData	float32	false	"Новая звездная величина"
 //	@Param			image		formData	file	false	"Новое изображение звезды"
 //	@Success		200			{string}	string	"Успешное обновление звезды"
 //	@Failure		400			{string}	string	"Некорректный ввод данных"
@@ -264,6 +268,7 @@ func (h *Handler) UpdateStar(c *gin.Context) {
 }
 
 // DeleteStar godoc
+//
 //	@Summary		Удалить звезду
 //	@Description	Удаляет существующую звезду по ее ID
 //	@Tags			Звезды
@@ -310,14 +315,15 @@ func (h *Handler) DeleteStar(c *gin.Context) {
 }
 
 // PutIntoEvent godoc
-//	@Summary		Добавить сообщение в событие
-//	@Description	Добавляет сообщение в событие по его ID
-//	@Tags			События
+//
+//	@Summary		Добавить звезду в событие
+//	@Description	Добавляет звезду в событие по ее ID
+//	@Tags				Звезды
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		int				true	"ID события"
-//	@Param			message	body		models.EventMsg	true	"Сообщение для добавления в событие"
-//	@Success		200		{string}	string			"Сообщение успешно добавлено в событие"
+//	@Param			message	body		models.EventMsg	true	"Звезда для добавления в событие"
+//	@Success		200		{string}	string			"Звезда успешно добавлено в событие"
 //	@Failure		400		{string}	string			"Некорректный ID события или сообщение"
 //	@Failure		500		{string}	string			"Ошибка сервера"
 //	@Router			/api/star/event [post]

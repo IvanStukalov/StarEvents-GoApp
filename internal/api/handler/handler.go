@@ -99,13 +99,6 @@ func (h *Handler) StartServer() {
 	}
 }
 
-// Ping godoc
-//	@Summary		Show hello text
-//	@Description	very very friendly response
-//	@Tags			Tests
-//	@Produce		json
-//	@Success		200	{object}	map[string]string
-//	@Router			/api/ping [get]
 func (h *Handler) Ping(c *gin.Context) {
 	c.JSON(
 		http.StatusOK,

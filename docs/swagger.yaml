@@ -124,7 +124,7 @@ paths:
       - ApiKeyAuth: []
       summary: Проверка аутентификации
       tags:
-      - Аутентификация
+      - Пользователи
   /api/event:
     delete:
       consumes:
@@ -157,11 +157,11 @@ paths:
         in: query
         name: status
         type: string
-      - description: Дата начала формирования события
+      - description: Верхняя граница формирования события
         in: query
         name: start_formation
         type: string
-      - description: Дата окончания формирования события
+      - description: Нижняя граница формирования события
         in: query
         name: end_formation
         type: string
@@ -328,22 +328,7 @@ paths:
       - ApiKeyAuth: []
       summary: Выход из системы
       tags:
-      - Аутентификация
-  /api/ping:
-    get:
-      description: very very friendly response
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Show hello text
-      tags:
-      - Tests
+      - Пользователи
   /api/signIn:
     post:
       consumes:
@@ -379,7 +364,7 @@ paths:
       - ApiKeyAuth: []
       summary: Авторизация пользователя
       tags:
-      - Аутентификация
+      - Пользователи
   /api/signUp:
     post:
       consumes:
@@ -420,27 +405,27 @@ paths:
         in: query
         name: name
         type: string
-      - description: Расстояние до верхней границы
+      - description: Верхняя граница расстояния
         in: query
         name: dist_top
         type: number
-      - description: Расстояние до нижней границы
+      - description: Нижняя граница расстояния
         in: query
         name: dist_bot
         type: number
-      - description: Возраст до верхней границы
+      - description: Верхняя граница возраста
         in: query
         name: age_top
         type: integer
-      - description: Возраст до нижней границы
+      - description: Нижняя граница возраста
         in: query
         name: age_bot
         type: integer
-      - description: Магнитуда до верхней границы
+      - description: Верхняя граница звездной величины
         in: query
         name: mag_top
         type: number
-      - description: Магнитуда до нижней границы
+      - description: Нижняя граница звездной величины
         in: query
         name: mag_bot
         type: number
@@ -482,7 +467,7 @@ paths:
         in: formData
         name: age
         type: number
-      - description: Магнитуда звезды
+      - description: Звездная величина
         in: formData
         name: magnitude
         type: number
@@ -513,7 +498,7 @@ paths:
     delete:
       consumes:
       - application/json
-      description: Удаляет звезду из события по ее ID
+      description: '"Удаляет звезду из события по ее ID"'
       parameters:
       - description: ID звезды
         in: path
@@ -535,9 +520,9 @@ paths:
           description: Ошибка сервера
           schema:
             type: string
-      summary: Удалить звезду из события
+      summary: '"Удалить звезду из события"'
       tags:
-      - События
+      - '"События"'
   /api/star/{id}:
     delete:
       consumes:
@@ -622,7 +607,7 @@ paths:
         in: formData
         name: age
         type: number
-      - description: Новая магнитуда звезды
+      - description: Новая звездная величина
         in: formData
         name: magnitude
         type: number
@@ -652,14 +637,14 @@ paths:
     post:
       consumes:
       - application/json
-      description: Добавляет сообщение в событие по его ID
+      description: Добавляет звезду в событие по ее ID
       parameters:
       - description: ID события
         in: path
         name: id
         required: true
         type: integer
-      - description: Сообщение для добавления в событие
+      - description: Звезда для добавления в событие
         in: body
         name: message
         required: true
@@ -669,7 +654,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Сообщение успешно добавлено в событие
+          description: Звезда успешно добавлено в событие
           schema:
             type: string
         "400":
@@ -680,9 +665,9 @@ paths:
           description: Ошибка сервера
           schema:
             type: string
-      summary: Добавить сообщение в событие
+      summary: Добавить звезду в событие
       tags:
-      - События
+      - Звезды
 schemes:
 - http
 swagger: "2.0"

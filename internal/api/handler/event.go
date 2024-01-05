@@ -11,14 +11,15 @@ import (
 )
 
 // GetEventList godoc
+//
 //	@Summary		Получить список событий
 //	@Description	Возвращает список событий, отфильтрованных по заданным параметрам
 //	@Tags			События
 //	@Accept			json
 //	@Produce		json
 //	@Param			status			query		string			false	"Статус события"
-//	@Param			start_formation	query		string			false	"Дата начала формирования события"
-//	@Param			end_formation	query		string			false	"Дата окончания формирования события"
+//	@Param			start_formation	query		string			false	"Верхняя граница формирования события"
+//	@Param			end_formation	query		string			false	"Нижняя граница формирования события"
 //	@Success		200				{array}		models.Event	"Список событий"
 //	@Failure		400				{string}	string			"Некорректный формат даты"
 //	@Failure		404				{string}	string			"События не найдены"
@@ -59,6 +60,7 @@ func (h *Handler) GetEventList(c *gin.Context) {
 }
 
 // GetEvent godoc
+//
 //	@Summary		Получить событие по ID
 //	@Description	Возвращает информацию о событии по его ID
 //	@Tags			События
@@ -88,6 +90,7 @@ func (h *Handler) GetEvent(c *gin.Context) {
 }
 
 // UpdateEvent godoc
+//
 //	@Summary		Обновить событие
 //	@Description	Обновляет существующее событие по его ID
 //	@Tags			События
@@ -112,6 +115,7 @@ func (h *Handler) UpdateEvent(c *gin.Context) {
 }
 
 // DeleteEvent godoc
+//
 //	@Summary		Удалить событие
 //	@Description	Удаляет существующее событие
 //	@Tags			События
@@ -133,6 +137,7 @@ func (h *Handler) DeleteEvent(c *gin.Context) {
 }
 
 // FormEvent godoc
+//
 //	@Summary		Создать событие
 //	@Description	Создает новое событие
 //	@Tags			События
@@ -153,6 +158,7 @@ func (h *Handler) FormEvent(c *gin.Context) {
 }
 
 // ChangeEventStatus godoc
+//
 //	@Summary		Изменить статус события
 //	@Description	Изменяет статус существующего события
 //	@Tags			События
