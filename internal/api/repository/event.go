@@ -11,7 +11,7 @@ import (
 )
 
 // get list of events
-func (r *Repository) GetEventList(status string, startFormation time.Time, endFormation time.Time) ([]models.Event, error) {
+func (r *Repository) GetEventList(status string, startFormation time.Time, endFormation time.Time, creatorId int) ([]models.Event, error) {
 	var events []models.Event
 	var queryCondition string
 	var wasPrevCond bool
@@ -36,6 +36,13 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 		queryCondition += fmt.Sprintf("formation_date < '%v'", endFormation.Format(time.DateTime))
 	}
 
+	if creatorId != 0 {
+		if wasPrevCond {
+			queryCondition += " AND "
+		}
+		queryCondition += fmt.Sprintf("creator_id = %v", creatorId)
+	}
+
 	log.Println(queryCondition)
 	r.db.Where("NOT status = ?", models.StatusDeleted).Order("event_id").Find(&events, queryCondition)
 
@@ -43,12 +50,21 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 }
 
 // get event by ID
-func (r *Repository) GetEventByID(eventId int) (models.Event, []models.Star, error) {
+func (r *Repository) GetEventByID(eventId int, creatorId int, isAdmin bool) (models.Event, []models.Star, error) {
 	event := models.Event{}
-	r.db.Find(&event, "event_id = ?", strconv.Itoa(eventId))
+	var err error
+	if isAdmin {
+		r.db.Find(&event, "event_id = ?", strconv.Itoa(eventId))
+	} else {
+		err = r.db.Where("creator_id = ?", strconv.Itoa(creatorId)).Find(&event, "event_id = ?", strconv.Itoa(eventId)).Error
+	}
+
+	if event.ID == 0 {
+		return models.Event{}, []models.Star{}, err
+	}
 
 	var starEvents []models.StarEvents
-	r.db.Find(&starEvents, "event_id = ?", strconv.Itoa(eventId))
+	r.db.Find(&starEvents, "event_id = ?", strconv.Itoa(event.ID))
 
 	var stars []models.Star
 	for i := 0; i < len(starEvents); i++ {
@@ -71,38 +87,6 @@ func (r *Repository) UpdateEvent(eventId int, name string) error {
 	res := r.db.Save(&event)
 
 	return res.Error
-}
-
-// put star into event
-func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) error {
-	var draft models.Event
-	r.db.Where("creator_id = ?", eventMsg.CreatorID).Where("status = ?", models.StatusCreated).First(&draft)
-
-	if draft.ID == 0 {
-		newEvent := models.Event{
-			CreatorID:    eventMsg.CreatorID,
-			Status:       models.StatusCreated,
-			// ModeratorID:  r.GetModeratorId(),
-			CreationDate: time.Now(),
-		}
-		res := r.db.Create(&newEvent)
-		if res.Error != nil {
-			return res.Error
-		}
-		draft = newEvent
-	}
-
-	starEvent := models.StarEvents{
-		EventID: draft.ID,
-		StarID:  eventMsg.StarID,
-	}
-
-	res := r.db.Create(&starEvent)
-	if res.Error != nil {
-		return res.Error
-	}
-
-	return nil
 }
 
 func (r *Repository) DeleteEvent(creatorId int) error {

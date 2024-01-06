@@ -620,7 +620,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "\"События\""
+                    "Событие-Звезды"
                 ],
                 "summary": "\"Удалить звезду из события\"",
                 "parameters": [
@@ -670,19 +670,10 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID события",
-                        "name": "id",
-                        "in": "path",
+                        "description": "ID звезды",
+                        "name": "star_id",
+                        "in": "query",
                         "required": true
-                    },
-                    {
-                        "description": "Звезда для добавления в событие",
-                        "name": "message",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.EventMsg"
-                        }
                     }
                 ],
                 "responses": {
@@ -907,17 +898,6 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
-                }
-            }
-        },
-        "models.EventMsg": {
-            "type": "object",
-            "properties": {
-                "creator_id": {
-                    "type": "integer"
-                },
-                "star_id": {
-                    "type": "integer"
                 }
             }
         },

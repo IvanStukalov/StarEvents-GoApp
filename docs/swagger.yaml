@@ -23,13 +23,6 @@ definitions:
       status:
         type: string
     type: object
-  models.EventMsg:
-    properties:
-      creator_id:
-        type: integer
-      star_id:
-        type: integer
-    type: object
   models.Star:
     properties:
       age:
@@ -522,7 +515,7 @@ paths:
             type: string
       summary: '"Удалить звезду из события"'
       tags:
-      - '"События"'
+      - Событие-Звезды
   /api/star/{id}:
     delete:
       consumes:
@@ -639,17 +632,11 @@ paths:
       - application/json
       description: Добавляет звезду в событие по ее ID
       parameters:
-      - description: ID события
-        in: path
-        name: id
+      - description: ID звезды
+        in: query
+        name: star_id
         required: true
         type: integer
-      - description: Звезда для добавления в событие
-        in: body
-        name: message
-        required: true
-        schema:
-          $ref: '#/definitions/models.EventMsg'
       produces:
       - application/json
       responses:

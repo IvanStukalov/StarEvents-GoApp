@@ -49,7 +49,9 @@ func (h *Handler) GetEventList(c *gin.Context) {
 		}
 	}
 
-	eventList, err := h.repo.GetEventList(status, startFormation, endFormation)
+	var creatorId = c.GetInt(userCtx)
+
+	eventList, err := h.repo.GetEventList(status, startFormation, endFormation, creatorId)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, err.Error())
 		log.Println(err)
@@ -79,7 +81,7 @@ func (h *Handler) GetEvent(c *gin.Context) {
 		return
 	}
 
-	event, starList, err := h.repo.GetEventByID(id)
+	event, starList, err := h.repo.GetEventByID(id, c.GetInt(userCtx), c.GetBool(adminCtx))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, err.Error())
 		log.Println(err)

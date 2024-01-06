@@ -1,13 +1,13 @@
 package handler
 
 import (
+	"StarEvent-GoApp/internal/models"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"log"
 	"net/http"
 	"strings"
-	"StarEvent-GoApp/internal/models"
 )
 
 const (
@@ -16,12 +16,19 @@ const (
 	adminCtx  = "IsAdmin"
 )
 
-func (h *Handler) WithAuthCheck(assignedRoles []models.Role) func(ctx *gin.Context) {
+func (h *Handler) WithAuthCheck(assignedRoles []models.Role, allowedUnauth bool) func(ctx *gin.Context) {
 	return func(gCtx *gin.Context) {
+
 		jwtStr, err := gCtx.Cookie("AccessToken")
-		if err != nil {
+		if err != nil && !allowedUnauth {
 			gCtx.AbortWithStatus(http.StatusForbidden) // отдаем что нет доступа
 			return
+		}
+
+		if allowedUnauth {
+			gCtx.Set(userCtx, 0)
+			gCtx.Set(adminCtx, false)
+			gCtx.Next()
 		}
 
 		if !strings.HasPrefix(jwtStr, jwtPrefix) { // если нет префикса то нас дурят!
@@ -34,7 +41,6 @@ func (h *Handler) WithAuthCheck(assignedRoles []models.Role) func(ctx *gin.Conte
 		err = h.redis.CheckJWTInBlacklist(gCtx.Request.Context(), jwtStr)
 		if err == nil { // значит что токен в блеклисте
 			gCtx.AbortWithStatus(http.StatusForbidden)
-
 			return
 		}
 		if !errors.Is(err, redis.Nil) {
@@ -46,6 +52,10 @@ func (h *Handler) WithAuthCheck(assignedRoles []models.Role) func(ctx *gin.Conte
 		h.tokenManager.Parse(jwtStr)
 
 		userId, isAdmin, err := h.tokenManager.Parse(jwtStr)
+		if err != nil {
+			gCtx.AbortWithStatus(http.StatusForbidden)
+			return
+		}
 
 		if len(assignedRoles) == 1 {
 			if !isAdmin && assignedRoles[0] == 1 || isAdmin && assignedRoles[0] == 0 {

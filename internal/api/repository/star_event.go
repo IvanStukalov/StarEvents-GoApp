@@ -26,5 +26,5 @@ func (r *Repository) RemoveStarFromEvent(creatorId int, starId int) (models.Even
 		return models.Event{}, []models.Star{}, err
 	}
 
-	return r.GetEventByID(event.ID)
+	return r.GetEventByID(event.ID, creatorId, false)
 }

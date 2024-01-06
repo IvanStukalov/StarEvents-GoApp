@@ -66,31 +66,31 @@ func (h *Handler) StartServer() {
 	api.POST("/signIn", h.SignIn)
 	api.POST("/signUp", h.SignUp)
 	api.POST("/logout", h.Logout)
-	api.GET("/check-auth", h.WithAuthCheck([]models.Role{models.Client, models.Admin}), h.CheckAuth)
+	api.GET("/check-auth", h.WithAuthCheck([]models.Role{models.Client, models.Admin}, false), h.CheckAuth)
 
 	starRouter := api.Group("star")
 	{
-		starRouter.GET("/", h.GetStarList)
+		starRouter.GET("/", h.WithAuthCheck([]models.Role{models.Admin, models.Client}, true), h.GetStarList)
 		starRouter.GET("/:id", h.GetStar)
-		starRouter.POST("/", h.WithAuthCheck([]models.Role{models.Admin}), h.CreateStar)
-		starRouter.DELETE("/:id", h.WithAuthCheck([]models.Role{models.Admin}), h.DeleteStar)
-		starRouter.PUT("/:id/update", h.WithAuthCheck([]models.Role{models.Admin}), h.UpdateStar)
-		starRouter.POST("/event", h.WithAuthCheck([]models.Role{models.Client}), h.PutIntoEvent)
+		starRouter.POST("/", h.WithAuthCheck([]models.Role{models.Admin}, false), h.CreateStar)
+		starRouter.DELETE("/:id", h.WithAuthCheck([]models.Role{models.Admin}, false), h.DeleteStar)
+		starRouter.PUT("/:id/update", h.WithAuthCheck([]models.Role{models.Admin}, false), h.UpdateStar)
+		starRouter.POST("/event", h.WithAuthCheck([]models.Role{models.Client}, false), h.PutIntoEvent)
 	}
 
 	eventRouter := api.Group("event")
 	{
-		eventRouter.GET("/", h.WithAuthCheck([]models.Role{models.Admin, models.Client}), h.GetEventList)
-		eventRouter.GET("/:id", h.WithAuthCheck([]models.Role{models.Admin, models.Client}), h.GetEvent)
-		eventRouter.PUT("/:id", h.WithAuthCheck([]models.Role{models.Client}), h.UpdateEvent)
-		eventRouter.DELETE("/", h.WithAuthCheck([]models.Role{models.Client}), h.DeleteEvent)
-		eventRouter.PUT("/form", h.WithAuthCheck([]models.Role{models.Client}), h.FormEvent)
-		eventRouter.PUT("/:id/status", h.WithAuthCheck([]models.Role{models.Admin}), h.ChangeEventStatus)
+		eventRouter.GET("/", h.WithAuthCheck([]models.Role{models.Admin, models.Client}, false), h.GetEventList)
+		eventRouter.GET("/:id", h.WithAuthCheck([]models.Role{models.Admin, models.Client}, false), h.GetEvent)
+		eventRouter.PUT("/:id", h.WithAuthCheck([]models.Role{models.Client}, false), h.UpdateEvent)
+		eventRouter.DELETE("/", h.WithAuthCheck([]models.Role{models.Client}, false), h.DeleteEvent)
+		eventRouter.PUT("/form", h.WithAuthCheck([]models.Role{models.Client}, false), h.FormEvent)
+		eventRouter.PUT("/:id/status", h.WithAuthCheck([]models.Role{models.Admin}, false), h.ChangeEventStatus)
 	}
 
 	starEventRouter := api.Group("star-event")
 	{
-		starEventRouter.DELETE("/:star-id", h.WithAuthCheck([]models.Role{models.Client}), h.RemoveStarFromEvent)
+		starEventRouter.DELETE("/:star-id", h.WithAuthCheck([]models.Role{models.Client}, false), h.RemoveStarFromEvent)
 	}
 
 	err := r.Run(fmt.Sprintf("%s:8080", os.Getenv("HOST")))

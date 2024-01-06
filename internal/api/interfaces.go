@@ -14,10 +14,9 @@ type Repo interface {
 	UpdateStar(star models.Star, isUpdA bool, isUpdD bool, isUpdM bool) error
 	GetStarImageById(starId int) (string, error)
 	CreateStar(star models.Star) error
-	RemoveFromEvent(starEvent models.StarEvents) error
 
-	GetEventList(status string, startFormation time.Time, endFormation time.Time) ([]models.Event, error)
-	GetEventByID(eventId int) (models.Event, []models.Star, error)
+	GetEventList(status string, startFormation time.Time, endFormation time.Time, creatorId int) ([]models.Event, error)
+	GetEventByID(eventId int, creatorId int, isAdmin bool) (models.Event, []models.Star, error)
 	UpdateEvent(eventId int, name string) error
 	PutIntoEvent(eventMsg models.EventMsg) error
 	DeleteEvent(creatorId int) error

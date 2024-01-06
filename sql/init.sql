@@ -6,8 +6,6 @@ drop table if exists "star_events" CASCADE;
 
 drop table if exists "users" CASCADE;
 
-drop table if exists "moderators" CASCADE;
-
 create table stars (
     star_id serial not null constraint star_pk primary key,
     name varchar(30) not null UNIQUE,
@@ -41,8 +39,8 @@ create table events (
     creation_date timestamp,
     formation_date timestamp,
     completion_date timestamp,
-    moderator_id integer constraint event_moderator_user_id_fk references "users",
-    creator_id integer constraint event_creator_user_id_fk references "users"
+    moderator_id integer,
+    creator_id integer constraint creator_id_fk references "users"(user_id)
 );
 
 alter table

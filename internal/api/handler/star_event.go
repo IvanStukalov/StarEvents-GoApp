@@ -9,7 +9,7 @@ import (
 // RemoveStarFromEvent godoc
 //	@Summary		"Удалить звезду из события"
 //	@Description	"Удаляет звезду из события по ее ID"
-//	@Tags			"События"
+//	@Tags			Событие-Звезды
 //	@Accept			json
 //	@Produce		json
 //	@Param			star-id	path		int				true	"ID звезды"

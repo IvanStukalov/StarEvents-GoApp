@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"StarEvent-GoApp/internal/models"
 )
@@ -170,11 +171,32 @@ func (r *Repository) DeleteStarByID(starId int) error {
 	return nil
 }
 
-// remove star from event
-func (r *Repository) RemoveFromEvent(starEvent models.StarEvents) error {
-	err := r.db.Where("event_id = ? AND star_id = ?", starEvent.EventID, starEvent.StarID).Delete(&starEvent).Error
-	if err != nil {
-		return err
+// put star into event
+func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) error {
+	var draft models.Event
+	r.db.Where("creator_id = ?", eventMsg.CreatorID).Where("status = ?", models.StatusCreated).First(&draft)
+
+	if draft.ID == 0 {
+		newEvent := models.Event{
+			CreatorID:    eventMsg.CreatorID,
+			Status:       models.StatusCreated,
+			CreationDate: time.Now(),
+		}
+		res := r.db.Create(&newEvent)
+		if res.Error != nil {
+			return res.Error
+		}
+		draft = newEvent
+	}
+
+	starEvent := models.StarEvents{
+		EventID: draft.ID,
+		StarID:  eventMsg.StarID,
+	}
+
+	res := r.db.Create(&starEvent)
+	if res.Error != nil {
+		return res.Error
 	}
 
 	return nil
