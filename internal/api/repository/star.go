@@ -172,9 +172,10 @@ func (r *Repository) DeleteStarByID(starId int) error {
 }
 
 // put star into event
-func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) error {
+func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) (int, error) {
 	var draft models.Event
 	r.db.Where("creator_id = ?", eventMsg.CreatorID).Where("status = ?", models.StatusCreated).First(&draft)
+
 
 	if draft.ID == 0 {
 		newEvent := models.Event{
@@ -184,7 +185,7 @@ func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) error {
 		}
 		res := r.db.Create(&newEvent)
 		if res.Error != nil {
-			return res.Error
+			return 0, res.Error
 		}
 		draft = newEvent
 	}
@@ -196,8 +197,8 @@ func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) error {
 
 	res := r.db.Create(&starEvent)
 	if res.Error != nil {
-		return res.Error
+		return 0, res.Error
 	}
 
-	return nil
+	return draft.ID, nil
 }

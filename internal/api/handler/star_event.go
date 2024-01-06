@@ -13,7 +13,7 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Param			star-id	path		int				true	"ID звезды"
-//	@Success		200		{object}	models.Event	"Событие после удаления звезды"
+//	@Success		200		{object}	map[string]interface{}	"Событие после удаления звезды"
 //	@Failure		400		{string}	string			"Некорректный ID звезды"
 //	@Failure		500		{string}	string			"Ошибка сервера"
 //	@Router			/api/star-event/{star-id} [delete]

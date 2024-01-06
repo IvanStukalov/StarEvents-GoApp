@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 	"gorm.io/gorm"
-	"log"
 	"strconv"
 	"time"
 
@@ -34,6 +33,7 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 			queryCondition += " AND "
 		}
 		queryCondition += fmt.Sprintf("formation_date < '%v'", endFormation.Format(time.DateTime))
+		wasPrevCond = true
 	}
 
 	if creatorId != 0 {
@@ -41,10 +41,21 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 			queryCondition += " AND "
 		}
 		queryCondition += fmt.Sprintf("creator_id = %v", creatorId)
+		wasPrevCond = true
 	}
 
-	log.Println(queryCondition)
 	r.db.Where("NOT status = ?", models.StatusDeleted).Order("event_id").Find(&events, queryCondition)
+
+	var creator models.User
+	var moderator models.User
+	for i := range events {
+		r.db.Find(&creator, "user_id = ?", events[i].CreatorID)
+		events[i].Creator = creator.Login
+
+		r.db.Find(&moderator, "user_id = ?", events[i].ModeratorID)
+		events[i].Moderator = moderator.Login
+
+	}
 
 	return events, nil
 }
@@ -106,6 +117,16 @@ func (r *Repository) FormEvent(creatorId int) error {
 	err := r.db.Where("status = ?", models.StatusCreated).First(&event, "creator_id = ?", creatorId)
 	if err.Error != nil {
 		return err.Error
+	}
+
+	var starEvent = []models.StarEvents{}
+	err = r.db.Find(&starEvent, "event_id = ?", event.ID)
+	if err.Error != nil {
+		return err.Error
+	}
+
+	if len(starEvent) == 0 {
+		return fmt.Errorf("заявка пуста")
 	}
 
 	event.Status = models.StatusFormed

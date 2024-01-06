@@ -195,7 +195,8 @@ paths:
         "200":
           description: Информация о событии
           schema:
-            $ref: '#/definitions/models.Event'
+            additionalProperties: true
+            type: object
         "400":
           description: Некорректный ID события
           schema:
@@ -504,7 +505,8 @@ paths:
         "200":
           description: Событие после удаления звезды
           schema:
-            $ref: '#/definitions/models.Event'
+            additionalProperties: true
+            type: object
         "400":
           description: Некорректный ID звезды
           schema:
@@ -641,9 +643,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: Звезда успешно добавлено в событие
+          description: Возвращает ID черновика
           schema:
-            type: string
+            type: integer
         "400":
           description: Некорректный ID события или сообщение
           schema:

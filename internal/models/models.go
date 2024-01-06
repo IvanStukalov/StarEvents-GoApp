@@ -8,10 +8,10 @@ const (
 )
 
 const (
-	StatusCreated  = "created"
-	StatusDeleted  = "deleted"
-	StatusFormed   = "formed"
-	StatusAccepted = "accepted"
-	StatusCanceled = "canceled"
-	StatusClosed   = "closed"
+	StatusCreated  = "Создано"
+	StatusDeleted  = "Удалено"
+	StatusFormed   = "Сформировано"
+	StatusAccepted = "Принято"
+	StatusCanceled = "Отклонено"
+	StatusClosed   = "Завершено"
 )

@@ -201,7 +201,8 @@ const docTemplate = `{
                     "200": {
                         "description": "Информация о событии",
                         "schema": {
-                            "$ref": "#/definitions/models.Event"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -636,7 +637,8 @@ const docTemplate = `{
                     "200": {
                         "description": "Событие после удаления звезды",
                         "schema": {
-                            "$ref": "#/definitions/models.Event"
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "400": {
@@ -678,9 +680,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Звезда успешно добавлено в событие",
+                        "description": "Возвращает ID черновика",
                         "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     },
                     "400": {

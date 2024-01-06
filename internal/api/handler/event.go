@@ -69,7 +69,7 @@ func (h *Handler) GetEventList(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int				true	"ID события"
-//	@Success		200	{object}	models.Event	"Информация о событии"
+//	@Success		200	{object}	map[string]interface{}	"Информация о событии"
 //	@Failure		400	{string}	string			"Некорректный ID события"
 //	@Failure		404	{string}	string			"Событие не найдено"
 //	@Router			/api/event/{id} [get]

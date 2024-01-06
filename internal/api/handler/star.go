@@ -322,7 +322,7 @@ func (h *Handler) DeleteStar(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			star_id		query		int				true	"ID звезды"
-//	@Success		200		{string}	string			"Звезда успешно добавлено в событие"
+//	@Success		200		{integer}	int64				"Возвращает ID черновика"
 //	@Failure		400		{string}	string			"Некорректный ID события или сообщение"
 //	@Failure		500		{string}	string			"Ошибка сервера"
 //	@Router			/api/star/event [post]
@@ -338,12 +338,12 @@ func (h *Handler) PutIntoEvent(c *gin.Context) {
 	eventMsg.StarID = starID
 	eventMsg.CreatorID = c.GetInt(userCtx)
 
-	err = h.repo.PutIntoEvent(eventMsg)
+	eventId, err := h.repo.PutIntoEvent(eventMsg)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 		log.Println(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, nil)
+	c.JSON(http.StatusOK, eventId)
 }
