@@ -46,8 +46,8 @@ alter table
     events owner to postgres;
 
 create table star_events (
-    star_id integer constraint star_event_star_star_id_fk references stars,
-    event_id integer constraint star_event_event_event_id_fk references events,
+    star_id integer constraint star_event_star_star_id_fk references stars (star_id) on delete cascade,
+    event_id integer constraint star_event_event_event_id_fk references events (event_id) on delete cascade,
     primary key (star_id, event_id)
 );
 
