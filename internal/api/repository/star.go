@@ -176,7 +176,6 @@ func (r *Repository) PutIntoEvent(eventMsg models.EventMsg) (int, error) {
 	var draft models.Event
 	r.db.Where("creator_id = ?", eventMsg.CreatorID).Where("status = ?", models.StatusCreated).First(&draft)
 
-
 	if draft.ID == 0 {
 		newEvent := models.Event{
 			CreatorID:    eventMsg.CreatorID,

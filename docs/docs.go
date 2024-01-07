@@ -585,8 +585,7 @@ const docTemplate = `{
                         "type": "file",
                         "description": "Изображение звезды",
                         "name": "image",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
                 "responses": {

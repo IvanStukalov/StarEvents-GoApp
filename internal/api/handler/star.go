@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -95,7 +96,7 @@ func (h *Handler) GetStar(c *gin.Context) {
 //	@Param			distance	formData	float32	false	"Расстояние до звезды"
 //	@Param			age			formData	float32	false	"Возраст звезды"
 //	@Param			magnitude	formData	float32	false	"Звездная величина"
-//	@Param			image		formData	file	true	"Изображение звезды"
+//	@Param			image		formData	file	false	"Изображение звезды"
 //	@Success		200			{string}	string	"Успешное создание звезды"
 //	@Failure		400			{string}	string	"Некорректный ввод данных"
 //	@Failure		500			{string}	string	"Ошибка сервера"
@@ -140,16 +141,12 @@ func (h *Handler) CreateStar(c *gin.Context) {
 	}
 
 	file, header, err := c.Request.FormFile("image")
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		log.Println(err)
-		return
-	}
-
-	if star.Image, err = h.minio.SaveImage(c.Request.Context(), file, header); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
-		log.Println(err)
-		return
+	if err == nil {
+		if star.Image, err = h.minio.SaveImage(c.Request.Context(), file, header); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
+			log.Println(err)
+			return
+		}
 	}
 
 	err = h.repo.CreateStar(star)
@@ -244,16 +241,22 @@ func (h *Handler) UpdateStar(c *gin.Context) {
 		// delete old image from db
 		url, err := h.repo.GetStarImageById(updatedStar.ID)
 		if err != nil {
+			fmt.Println("1")
 			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
 			log.Println(err)
 			return
 		}
-		// delete image from minio
-		err = h.minio.DeleteImage(c.Request.Context(), utils.ExtractObjectNameFromUrl(url))
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-			log.Println(err)
-			return
+
+		objectName := utils.ExtractObjectNameFromUrl(url)
+		if len(objectName) != 0 {
+			// delete image from minio
+			err = h.minio.DeleteImage(c.Request.Context(), objectName)
+			if err != nil {
+				fmt.Println("2")
+				c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+				log.Println(err)
+				return
+			}
 		}
 	}
 
@@ -303,12 +306,15 @@ func (h *Handler) DeleteStar(c *gin.Context) {
 		return
 	}
 
-	// delete image from minio
-	err = h.minio.DeleteImage(c.Request.Context(), utils.ExtractObjectNameFromUrl(url))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
-		log.Println(err)
-		return
+	objectName := utils.ExtractObjectNameFromUrl(url)
+	if len(objectName) != 0 {
+		// delete image from minio
+		err = h.minio.DeleteImage(c.Request.Context(), objectName)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, err.Error())
+			log.Println(err)
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, nil)

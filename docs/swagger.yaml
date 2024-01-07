@@ -468,7 +468,6 @@ paths:
       - description: Изображение звезды
         in: formData
         name: image
-        required: true
         type: file
       produces:
       - application/json

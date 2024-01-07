@@ -10,7 +10,7 @@ import (
 )
 
 // get list of events
-func (r *Repository) GetEventList(status string, startFormation time.Time, endFormation time.Time, creatorId int) ([]models.Event, error) {
+func (r *Repository) GetEventList(status string, startFormation time.Time, endFormation time.Time, creatorId int, isAdmin bool) ([]models.Event, error) {
 	var events []models.Event
 	var queryCondition string
 	var wasPrevCond bool
@@ -36,7 +36,7 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 		wasPrevCond = true
 	}
 
-	if creatorId != 0 {
+	if creatorId != 0 && !isAdmin {
 		if wasPrevCond {
 			queryCondition += " AND "
 		}
@@ -46,15 +46,16 @@ func (r *Repository) GetEventList(status string, startFormation time.Time, endFo
 
 	r.db.Where("NOT status = ?", models.StatusDeleted).Order("event_id").Find(&events, queryCondition)
 
-	var creator models.User
-	var moderator models.User
 	for i := range events {
+		var creator models.User
+		var moderator models.User
 		r.db.Find(&creator, "user_id = ?", events[i].CreatorID)
 		events[i].Creator = creator.Login
 
-		r.db.Find(&moderator, "user_id = ?", events[i].ModeratorID)
-		events[i].Moderator = moderator.Login
-
+		if events[i].ModeratorID != 0 {
+			r.db.Find(&moderator, "user_id = ?", events[i].ModeratorID)
+			events[i].Moderator = moderator.Login
+		}
 	}
 
 	return events, nil
@@ -137,7 +138,7 @@ func (r *Repository) FormEvent(creatorId int) error {
 	return res.Error
 }
 
-func (r *Repository) ChangeEventStatus(eventId int, status string) error {
+func (r *Repository) ChangeEventStatus(eventId int, status string, moderatorId int) error {
 	var event models.Event
 
 	err := r.db.Where("status = ?", models.StatusFormed).First(&event, "event_id = ?", eventId)
@@ -147,6 +148,8 @@ func (r *Repository) ChangeEventStatus(eventId int, status string) error {
 
 	event.Status = status
 	event.CompletionDate = time.Now()
+	event.ModeratorID = moderatorId
+
 	res := r.db.Save(&event)
 
 	return res.Error

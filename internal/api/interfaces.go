@@ -16,12 +16,12 @@ type Repo interface {
 	CreateStar(star models.Star) error
 	PutIntoEvent(eventMsg models.EventMsg) (int, error)
 
-	GetEventList(status string, startFormation time.Time, endFormation time.Time, creatorId int) ([]models.Event, error)
+	GetEventList(status string, startFormation time.Time, endFormation time.Time, creatorId int, isAdmin bool) ([]models.Event, error)
 	GetEventByID(eventId int, creatorId int, isAdmin bool) (models.Event, []models.Star, error)
 	UpdateEvent(eventId int, name string) error
 	DeleteEvent(creatorId int) error
 	FormEvent(creatorId int) error
-	ChangeEventStatus(eventId int, status string) error
+	ChangeEventStatus(eventId int, status string, moderatorId int) error
 	GetDraft(creatorId int) (int, error)
 
 	RemoveStarFromEvent(creatorId int, starId int) (models.Event, []models.Star, error)

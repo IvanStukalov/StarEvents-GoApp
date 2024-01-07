@@ -50,8 +50,9 @@ func (h *Handler) GetEventList(c *gin.Context) {
 	}
 
 	var creatorId = c.GetInt(userCtx)
+	var isAdmin = c.GetBool(adminCtx)
 
-	eventList, err := h.repo.GetEventList(status, startFormation, endFormation, creatorId)
+	eventList, err := h.repo.GetEventList(status, startFormation, endFormation, creatorId, isAdmin)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, err.Error())
 		log.Println(err)
@@ -174,8 +175,8 @@ func (h *Handler) FormEvent(c *gin.Context) {
 //	@Router			/api/event/{id}/status [put]
 func (h *Handler) ChangeEventStatus(c *gin.Context) {
 	status := c.Query("status")
-	if status != models.StatusAccepted && status != models.StatusCanceled && status != models.StatusClosed {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Поменять статус можно только на 'accepted, 'closed' и 'canceled'"})
+	if status != models.StatusAccepted && status != models.StatusCanceled {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Поменять статус можно только на 'Принято' и 'Отклонено'"})
 		return
 	}
 
@@ -186,7 +187,7 @@ func (h *Handler) ChangeEventStatus(c *gin.Context) {
 		return
 	}
 
-	err = h.repo.ChangeEventStatus(eventId, status)
+	err = h.repo.ChangeEventStatus(eventId, status, c.GetInt(userCtx))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return

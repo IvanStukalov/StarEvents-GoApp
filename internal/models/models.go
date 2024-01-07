@@ -13,5 +13,4 @@ const (
 	StatusFormed   = "Сформировано"
 	StatusAccepted = "Принято"
 	StatusCanceled = "Отклонено"
-	StatusClosed   = "Завершено"
 )
