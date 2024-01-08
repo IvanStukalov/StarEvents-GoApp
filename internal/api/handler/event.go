@@ -1,13 +1,22 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"StarEvent-GoApp/internal/models"
+
 	"github.com/gin-gonic/gin"
+)
+
+const (
+	Token      = "rjbrbjwf4908h8nfieh"
+	ServiceUrl = "http://127.0.0.1:8081/scan/"
 )
 
 // GetEventList godoc
@@ -194,4 +203,88 @@ func (h *Handler) ChangeEventStatus(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Статус изменен"})
 	return
+}
+
+// StartScanning godoc
+//
+//	@Summary		Начать сканирование
+//	@Description	Обновляет процент сканирования
+//	@Tags			События
+//
+// @Accept json
+// @Produce json
+// @Param id query int true "ID события для сканирования"
+// @Success 200 {object} map[string]string "Сообщение об успешности"
+// @Failure 400 {object} map[string]string "Ошибка при привязке JSON"
+// @Failure 500 {object} map[string]string "Ошибка при отправке запроса"
+//
+//	@Router			/api/event/start-scanning [put]
+func (h *Handler) StartScanning(c *gin.Context) {
+	eventId, err := strconv.Atoi(c.Query("id"))
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, gin.H{"message": "Неверный формат"})
+		return
+	}
+
+	var event models.EventAsync
+	event.ID = eventId
+	body, _ := json.Marshal(event)
+
+	fmt.Println("Body formed:", body)
+
+	client := &http.Client{}
+	req, err := http.NewRequest("PUT", ServiceUrl, bytes.NewBuffer(body))
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error sending request:", err)
+		return
+	}
+
+	if resp.StatusCode == 200 {
+		c.JSON(http.StatusOK, gin.H{"message": "заявка принята в обработку"})
+		return
+	}
+	c.AbortWithError(http.StatusInternalServerError, gin.H{"message": "заявка не принята в обработку"})
+}
+
+// FinishScanning godoc
+// @Summary Завершает процесс сканирования
+// @Description Принимает JSON запрос, проверяет токен и сохраняет процент сканирования. Возвращает сообщение об успешности или ошибке.
+// @Tags			События
+//
+// @Accept json
+// @Produce json
+// @Param event body map[string]interface{} true "Событие для завершения сканирования"
+// @Success 200 {object} map[string]string "Сообщение об успешности"
+// @Failure 400 {object} map[string]string "Ошибка при привязке JSON"
+// @Failure 403 {object} map[string]string "Неверный токен"
+// @Router /api/event/finish-scanning [put]
+func (h *Handler) FinishScanning(c *gin.Context) {
+	var event models.EventAsync
+	if err := c.BindJSON(&event); err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		log.Println(err)
+		return
+	}
+
+	fmt.Println("Finish scanning:", event)
+
+	if event.Token != Token {
+		c.AbortWithError(http.StatusForbidden, gin.H{"message": "неверный токен"})
+		return
+	}
+
+	err := h.repo.SaveScannedPercent(event)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "данные сохранены"})
 }

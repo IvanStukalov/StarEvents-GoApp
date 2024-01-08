@@ -140,6 +140,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/event/finish-scanning": {
+            "put": {
+                "description": "Принимает JSON запрос, проверяет токен и сохраняет процент сканирования. Возвращает сообщение об успешности или ошибке.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "События"
+                ],
+                "summary": "Завершает процесс сканирования",
+                "parameters": [
+                    {
+                        "description": "Событие для завершения сканирования",
+                        "name": "event",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Сообщение об успешности",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка при привязке JSON",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Неверный токен",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/event/form": {
             "put": {
                 "description": "Создает новое событие",
@@ -170,6 +226,59 @@ const docTemplate = `{
                         "description": "Ошибка сервера",
                         "schema": {
                             "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/event/start-scanning": {
+            "put": {
+                "description": "Обновляет процент сканирования",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "События"
+                ],
+                "summary": "Начать сканирование",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID события для сканирования",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Сообщение об успешности",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка при привязке JSON",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка при отправке запроса",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -897,6 +1006,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "scanned_percent": {
+                    "type": "integer"
+                },
                 "status": {
                     "type": "string"
                 }
@@ -945,16 +1057,10 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 64
                 },
-                "name": {
-                    "type": "string"
-                },
                 "password": {
                     "type": "string",
                     "maxLength": 64,
                     "minLength": 8
-                },
-                "registrationDate": {
-                    "type": "string"
                 },
                 "userId": {
                     "type": "integer"

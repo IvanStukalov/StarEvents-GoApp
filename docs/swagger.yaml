@@ -20,6 +20,8 @@ definitions:
         type: integer
       name:
         type: string
+      scanned_percent:
+        type: integer
       status:
         type: string
     type: object
@@ -49,13 +51,9 @@ definitions:
       login:
         maxLength: 64
         type: string
-      name:
-        type: string
       password:
         maxLength: 64
         minLength: 8
-        type: string
-      registrationDate:
         type: string
       userId:
         type: integer
@@ -275,6 +273,44 @@ paths:
       summary: Изменить статус события
       tags:
       - События
+  /api/event/finish-scanning:
+    put:
+      consumes:
+      - application/json
+      description: Принимает JSON запрос, проверяет токен и сохраняет процент сканирования.
+        Возвращает сообщение об успешности или ошибке.
+      parameters:
+      - description: Событие для завершения сканирования
+        in: body
+        name: event
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сообщение об успешности
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Ошибка при привязке JSON
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Неверный токен
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Завершает процесс сканирования
+      tags:
+      - События
   /api/event/form:
     put:
       consumes:
@@ -296,6 +332,41 @@ paths:
           schema:
             type: string
       summary: Создать событие
+      tags:
+      - События
+  /api/event/start-scanning:
+    put:
+      consumes:
+      - application/json
+      description: Обновляет процент сканирования
+      parameters:
+      - description: ID события для сканирования
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Сообщение об успешности
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Ошибка при привязке JSON
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Ошибка при отправке запроса
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Начать сканирование
       tags:
       - События
   /api/logout:
