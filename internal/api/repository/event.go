@@ -87,6 +87,16 @@ func (r *Repository) GetEventByID(eventId int, creatorId int, isAdmin bool) (mod
 		}
 	}
 
+	var creator models.User
+	var moderator models.User
+	r.db.Find(&creator, "user_id = ?", event.CreatorID)
+	event.Creator = creator.Login
+
+	if event.ModeratorID != 0 {
+		r.db.Find(&moderator, "user_id = ?", event.ModeratorID)
+		event.Moderator = moderator.Login
+	}
+
 	return event, stars, nil
 }
 
@@ -113,29 +123,32 @@ func (r *Repository) DeleteEvent(creatorId int) error {
 	return res.Error
 }
 
-func (r *Repository) FormEvent(creatorId int) error {
+func (r *Repository) FormEvent(creatorId int) (error, int) {
 	var event models.Event
 	err := r.db.Where("status = ?", models.StatusCreated).First(&event, "creator_id = ?", creatorId)
 	if err.Error != nil {
-		return err.Error
+		return err.Error, 0
 	}
 
 	var starEvent = []models.StarEvents{}
 	err = r.db.Find(&starEvent, "event_id = ?", event.ID)
 	if err.Error != nil {
-		return err.Error
+		return err.Error, 0
 	}
 
 	if len(starEvent) == 0 {
-		return fmt.Errorf("заявка пуста")
+		return fmt.Errorf("заявка пуста"), 0
 	}
 
 	event.Status = models.StatusFormed
 	event.FormationDate = time.Now()
 
 	res := r.db.Save(&event)
+	if res.Error != nil {
+		return res.Error, 0
+	}
 
-	return res.Error
+	return nil, event.ID
 }
 
 func (r *Repository) ChangeEventStatus(eventId int, status string, moderatorId int) error {

@@ -51,15 +51,10 @@ definitions:
       login:
         maxLength: 64
         type: string
-      password:
-        maxLength: 64
-        minLength: 8
-        type: string
       userId:
         type: integer
     required:
     - login
-    - password
     type: object
   models.UserLogin:
     properties:
@@ -116,7 +111,7 @@ paths:
       summary: Проверка аутентификации
       tags:
       - Пользователи
-  /api/event:
+  /api/event/:
     delete:
       consumes:
       - application/json
@@ -334,41 +329,6 @@ paths:
       summary: Создать событие
       tags:
       - События
-  /api/event/start-scanning:
-    put:
-      consumes:
-      - application/json
-      description: Обновляет процент сканирования
-      parameters:
-      - description: ID события для сканирования
-        in: query
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Сообщение об успешности
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "400":
-          description: Ошибка при привязке JSON
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Ошибка при отправке запроса
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Начать сканирование
-      tags:
-      - События
   /api/logout:
     post:
       consumes:
@@ -460,7 +420,37 @@ paths:
       summary: Регистрация нового пользователя
       tags:
       - Пользователи
-  /api/star:
+  /api/star-event/{star-id}:
+    delete:
+      consumes:
+      - application/json
+      description: '"Удаляет звезду из события по ее ID"'
+      parameters:
+      - description: ID звезды
+        in: path
+        name: star-id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Событие после удаления звезды
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Некорректный ID звезды
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: '"Удалить звезду из события"'
+      tags:
+      - Событие-Звезды
+  /api/star/:
     get:
       consumes:
       - application/json
@@ -558,36 +548,6 @@ paths:
       summary: Создать звезду
       tags:
       - Звезды
-  /api/star-event/{star-id}:
-    delete:
-      consumes:
-      - application/json
-      description: '"Удаляет звезду из события по ее ID"'
-      parameters:
-      - description: ID звезды
-        in: path
-        name: star-id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Событие после удаления звезды
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Некорректный ID звезды
-          schema:
-            type: string
-        "500":
-          description: Ошибка сервера
-          schema:
-            type: string
-      summary: '"Удалить звезду из события"'
-      tags:
-      - Событие-Звезды
   /api/star/{id}:
     delete:
       consumes:

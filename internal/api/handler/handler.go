@@ -88,7 +88,6 @@ func (h *Handler) StartServer() {
 		eventRouter.PUT("/:id/status", h.WithAuthCheck([]models.Role{models.Admin}, false), h.ChangeEventStatus)
 
 		// async
-		eventRouter.PUT("/start-scanning", h.WithAuthCheck([]models.Role{models.Admin}, false), h.StartScanning)
 		eventRouter.PUT("/finish-scanning", h.FinishScanning)
 	}
 

@@ -49,7 +49,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/event": {
+        "/api/event/": {
             "get": {
                 "description": "Возвращает список событий, отфильтрованных по заданным параметрам",
                 "consumes": [
@@ -226,59 +226,6 @@ const docTemplate = `{
                         "description": "Ошибка сервера",
                         "schema": {
                             "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/event/start-scanning": {
-            "put": {
-                "description": "Обновляет процент сканирования",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "События"
-                ],
-                "summary": "Начать сканирование",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID события для сканирования",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Сообщение об успешности",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Ошибка при привязке JSON",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка при отправке запроса",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
                         }
                     }
                 }
@@ -572,7 +519,52 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/star": {
+        "/api/star-event/{star-id}": {
+            "delete": {
+                "description": "\"Удаляет звезду из события по ее ID\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Событие-Звезды"
+                ],
+                "summary": "\"Удалить звезду из события\"",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID звезды",
+                        "name": "star-id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Событие после удаления звезды",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректный ID звезды",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Ошибка сервера",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/star/": {
             "get": {
                 "description": "Возвращает список звезд, отфильтрованных по заданным параметрам",
                 "consumes": [
@@ -706,51 +698,6 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Некорректный ввод данных",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Ошибка сервера",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/star-event/{star-id}": {
-            "delete": {
-                "description": "\"Удаляет звезду из события по ее ID\"",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Событие-Звезды"
-                ],
-                "summary": "\"Удалить звезду из события\"",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID звезды",
-                        "name": "star-id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Событие после удаления звезды",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Некорректный ID звезды",
                         "schema": {
                             "type": "string"
                         }
@@ -1046,8 +993,7 @@ const docTemplate = `{
         "models.User": {
             "type": "object",
             "required": [
-                "login",
-                "password"
+                "login"
             ],
             "properties": {
                 "isAdmin": {
@@ -1056,11 +1002,6 @@ const docTemplate = `{
                 "login": {
                     "type": "string",
                     "maxLength": 64
-                },
-                "password": {
-                    "type": "string",
-                    "maxLength": 64,
-                    "minLength": 8
                 },
                 "userId": {
                     "type": "integer"

@@ -3,12 +3,11 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
-
+	"errors"
 	"StarEvent-GoApp/internal/models"
 
 	"github.com/gin-gonic/gin"
@@ -32,7 +31,7 @@ const (
 //	@Success		200				{array}		models.Event	"Список событий"
 //	@Failure		400				{string}	string			"Некорректный формат даты"
 //	@Failure		404				{string}	string			"События не найдены"
-//	@Router			/api/event [get]
+//	@Router			/api/event/ [get]
 func (h *Handler) GetEventList(c *gin.Context) {
 	var startFormation time.Time
 	var endFormation time.Time
@@ -136,7 +135,7 @@ func (h *Handler) UpdateEvent(c *gin.Context) {
 //	@Success		200	{string}	string	"Событие успешно удалено"
 //	@Failure		400	{string}	string	"Ошибка удаления события"
 //	@Failure		500	{string}	string	"Ошибка сервера"
-//	@Router			/api/event [delete]
+//	@Router			/api/event/ [delete]
 func (h *Handler) DeleteEvent(c *gin.Context) {
 	creatorId := c.GetInt(userCtx)
 	err := h.repo.DeleteEvent(creatorId)
@@ -160,10 +159,15 @@ func (h *Handler) DeleteEvent(c *gin.Context) {
 //	@Failure		500	{string}	string	"Ошибка сервера"
 //	@Router			/api/event/form [put]
 func (h *Handler) FormEvent(c *gin.Context) {
-	err := h.repo.FormEvent(c.GetInt(userCtx))
+	err, eventId := h.repo.FormEvent(c.GetInt(userCtx))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err.Error())
 		return
+	}
+
+	err = h.StartScanning(eventId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"mesage": err})
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Статус изменен"})
@@ -205,53 +209,29 @@ func (h *Handler) ChangeEventStatus(c *gin.Context) {
 	return
 }
 
-// StartScanning godoc
-//
-//	@Summary		Начать сканирование
-//	@Description	Обновляет процент сканирования
-//	@Tags			События
-//
-// @Accept json
-// @Produce json
-// @Param id query int true "ID события для сканирования"
-// @Success 200 {object} map[string]string "Сообщение об успешности"
-// @Failure 400 {object} map[string]string "Ошибка при привязке JSON"
-// @Failure 500 {object} map[string]string "Ошибка при отправке запроса"
-//
-//	@Router			/api/event/start-scanning [put]
-func (h *Handler) StartScanning(c *gin.Context) {
-	eventId, err := strconv.Atoi(c.Query("id"))
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, gin.H{"message": "Неверный формат"})
-		return
-	}
-
+func (h *Handler) StartScanning(eventId int) error {
 	var event models.EventAsync
 	event.ID = eventId
 	body, _ := json.Marshal(event)
 
-	fmt.Println("Body formed:", body)
-
 	client := &http.Client{}
 	req, err := http.NewRequest("PUT", ServiceUrl, bytes.NewBuffer(body))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
+		return errors.New("ошибка создания запроса")
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error sending request:", err)
-		return
+		return errors.New("ошибка запроса")
 	}
 
 	if resp.StatusCode == 200 {
-		c.JSON(http.StatusOK, gin.H{"message": "заявка принята в обработку"})
-		return
+		return nil
 	}
-	c.AbortWithError(http.StatusInternalServerError, gin.H{"message": "заявка не принята в обработку"})
+	
+	return errors.New("запрос не принят в обработку")
 }
 
 // FinishScanning godoc
@@ -273,8 +253,6 @@ func (h *Handler) FinishScanning(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-
-	fmt.Println("Finish scanning:", event)
 
 	if event.Token != Token {
 		c.AbortWithError(http.StatusForbidden, gin.H{"message": "неверный токен"})

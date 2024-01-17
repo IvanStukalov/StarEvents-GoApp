@@ -28,7 +28,7 @@ import (
 //	@Param			mag_bot		query		float64					false	"Нижняя граница звездной величины"
 //	@Success		200			{object}	map[string]interface{}	"Успешный ответ"
 //	@Failure		404			{object}	map[string]interface{}	"Ошибка при получении списка звезд или черновика"
-//	@Router			/api/star [get]
+//	@Router			/api/star/ [get]
 func (h *Handler) GetStarList(c *gin.Context) {
 	starList, err := h.repo.GetFilteredStars(c.Query("name"),
 		c.Query("dist_top"),
@@ -100,7 +100,7 @@ func (h *Handler) GetStar(c *gin.Context) {
 //	@Success		200			{string}	string	"Успешное создание звезды"
 //	@Failure		400			{string}	string	"Некорректный ввод данных"
 //	@Failure		500			{string}	string	"Ошибка сервера"
-//	@Router			/api/star [post]
+//	@Router			/api/star/ [post]
 func (h *Handler) CreateStar(c *gin.Context) {
 	var star models.Star
 
